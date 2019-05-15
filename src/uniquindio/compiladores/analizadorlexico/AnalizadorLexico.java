@@ -88,6 +88,8 @@ public class AnalizadorLexico {
 				continue;
 			if (esOperadorIncremento())
 				continue;
+			if (esOperadorDecremento())
+				continue;
 
 			/*
 			 * Si no se forma ningun token valido con la secuencia de caracteres el caracter
@@ -97,7 +99,6 @@ public class AnalizadorLexico {
 				listaTokens.add(new Token("" + caracterActual, Categoria.DESCONOCIDO, filaActual, columnaActual));
 				darSiguienteCaracter();
 			}
-
 		}
 	}
 
@@ -141,6 +142,7 @@ public class AnalizadorLexico {
 
 		}
 
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -156,6 +158,7 @@ public class AnalizadorLexico {
 			String palabra = "";
 			int filaInicio = filaActual;
 			int columnaInicio = columnaActual;
+			int posicionInicial = posActual;
 
 			// Transicion
 			palabra += caracterActual;
@@ -171,6 +174,8 @@ public class AnalizadorLexico {
 
 				// Se valida si la cadena solo es un punto, si es así se retorna falso
 				if (palabra.length() == 1 && palabra.contains(".")) {
+					// Se realiza backtrackig para que lo valide otro automata que coincide con este
+					// caracter.
 					darAnteriorCaracter(columnaInicio, filaInicio);
 					return false;
 				} else {
@@ -181,11 +186,20 @@ public class AnalizadorLexico {
 			} else {
 				while ((Character.isDigit(caracterActual) || caracterActual == '.')
 						&& posActual < codigoFuente.length()) {
+
 					if (palabra.contains(".") && caracterActual == '.') {
 						break;
 					} else {
 						palabra += caracterActual;
 						darSiguienteCaracter();
+
+						// Si la palabra no contiene punto y el caracter actual es diferente de punto y
+						// diferente de digito se debe hacer BT
+						if (caracterActual != '.' && !(Character.isDigit(caracterActual)) && !(palabra.contains("."))) {
+							hacerBT(posicionInicial, columnaInicio, filaInicio);
+							return false;
+						}
+
 					}
 				}
 				listaTokens.add(new Token(palabra, Categoria.REAL, filaInicio, columnaInicio));
@@ -234,12 +248,16 @@ public class AnalizadorLexico {
 				}
 
 			} else {
-				darAnteriorCaracter(columnaTemporal, filaTemporal);
-				return false;
-			}
 
+				// Reporte de error si es fin de codigo o cos
+				palabra += caracterActual;
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				darSiguienteCaracter();
+				return true;
+			}
 		}
 
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -267,12 +285,21 @@ public class AnalizadorLexico {
 				listaTokens.add(new Token(palabra, Categoria.OPERADOR_ARITMETICO, filaInicio, columnaInicio));
 				return true;
 			} else {
-				darAnteriorCaracter(columnaInicio, filaInicio);
-				return false;
+
+				// Reporte de error si es fin de codigo o cos
+				palabra += caracterActual;
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				darSiguienteCaracter();
+				return true;
+
+				/*
+				 * darAnteriorCaracter(columnaInicio, filaInicio); return false;
+				 */
 			}
 
 		}
 
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -334,16 +361,29 @@ public class AnalizadorLexico {
 					darSiguienteCaracter();
 					return true;
 				} else {
+					// Reporte de error si es fin de codigo o cos
+					palabra += caracterActual;
+					listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+					darSiguienteCaracter();
+					return true;
+					
+					/*darAnteriorCaracter(columnaInicio, filaInicio);
 					darAnteriorCaracter(columnaInicio, filaInicio);
-					darAnteriorCaracter(columnaInicio, filaInicio);
-					return false;
+					return false;*/
 				}
 			} else {
-				darAnteriorCaracter(columnaInicio, filaInicio);
-				return false;
+				// Reporte de error si es fin de codigo o cos
+				palabra += caracterActual;
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				darSiguienteCaracter();
+				return true;
+				
+				/*darAnteriorCaracter(columnaInicio, filaInicio);
+				return false;*/
 			}
 		}
 
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -369,11 +409,19 @@ public class AnalizadorLexico {
 				darSiguienteCaracter();
 				return true;
 			} else {
-				darAnteriorCaracter(columnaInicio, filaInicio);
-				return false;
+				
+				// Reporte de error si es fin de codigo o cos
+				palabra += caracterActual;
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				darSiguienteCaracter();
+				return true;
+				/*
+				 * darAnteriorCaracter(columnaInicio, filaInicio); return false;
+				 */
 			}
 		}
 
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -831,7 +879,6 @@ public class AnalizadorLexico {
 		return false;
 	}
 
-	
 	/**
 	 * Metodo que permite validar si el token es sl punto
 	 * 
@@ -948,9 +995,54 @@ public class AnalizadorLexico {
 	}
 
 	/**
+	 * Metodo que permite verificar si el token es un operador de decremento
+	 * 
+	 * @return true si es un operador de decremento, false en caso contrario.
+	 */
+	public boolean esOperadorDecremento() {
+
+		if (caracterActual == '!') {
+			String palabra = "";
+			int filaInicio = filaActual;
+			int columnaInicio = columnaActual;
+
+			// Transicion
+			palabra += caracterActual;
+			darSiguienteCaracter();
+
+			if (caracterActual == '-') {
+				palabra += caracterActual;
+				darSiguienteCaracter();
+				if (caracterActual == '-') {
+					palabra += caracterActual;
+					listaTokens.add(new Token(palabra, Categoria.OPERADOR_DECREMENTO, filaInicio, columnaInicio));
+					darSiguienteCaracter();
+					return true;
+				} else {
+					// Reporte de error
+					palabra += caracterActual;
+					listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+					darSiguienteCaracter();
+					return true;
+				}
+
+			} else {
+				// Reporte de error
+				palabra += caracterActual;
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				darSiguienteCaracter();
+				return true;
+			}
+		}
+
+		// Rechazo inmediato
+		return false;
+	}
+
+	/**
 	 * Permite obtener el siguiente caracter de una cadena respecto a la posicion
 	 * actual. De igual manera permite obtener la fila y la columna donde se ubica
-	 * el caracter
+	 * el caracter. Es la transicion del automata
 	 */
 	public void darSiguienteCaracter() {
 		posActual++;

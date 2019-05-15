@@ -67,7 +67,7 @@ public class AnalizadorGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public AnalizadorGUI() {
-		setTitle("Analizador L\u00E9xico JHOSOCA");
+		setTitle("Analizador L\u00E9xico JORJHO");
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 766, 729);
