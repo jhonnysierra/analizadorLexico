@@ -43,6 +43,7 @@ public class AnalizadorLexico {
 		 * caracter a caracter y verificando si forman un token valido para el lenguaje
 		 * JORJHO
 		 */
+
 		while (posActual < codigoFuente.length()) {
 			if (caracterActual == ' ' || caracterActual == '\n' || caracterActual == '\t') {
 				darSiguienteCaracter();
@@ -89,6 +90,10 @@ public class AnalizadorLexico {
 			if (esOperadorIncremento())
 				continue;
 			if (esOperadorDecremento())
+				continue;
+			if (esCorchete())
+				continue;
+			if (esComentarioLinea())
 				continue;
 
 			/*
@@ -366,10 +371,12 @@ public class AnalizadorLexico {
 					listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
 					darSiguienteCaracter();
 					return true;
-					
-					/*darAnteriorCaracter(columnaInicio, filaInicio);
-					darAnteriorCaracter(columnaInicio, filaInicio);
-					return false;*/
+
+					/*
+					 * darAnteriorCaracter(columnaInicio, filaInicio);
+					 * darAnteriorCaracter(columnaInicio, filaInicio); return false;
+					 */
+
 				}
 			} else {
 				// Reporte de error si es fin de codigo o cos
@@ -377,9 +384,10 @@ public class AnalizadorLexico {
 				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
 				darSiguienteCaracter();
 				return true;
-				
-				/*darAnteriorCaracter(columnaInicio, filaInicio);
-				return false;*/
+
+				/*
+				 * darAnteriorCaracter(columnaInicio, filaInicio); return false;
+				 */
 			}
 		}
 
@@ -409,7 +417,7 @@ public class AnalizadorLexico {
 				darSiguienteCaracter();
 				return true;
 			} else {
-				
+
 				// Reporte de error si es fin de codigo o cos
 				palabra += caracterActual;
 				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
@@ -443,7 +451,8 @@ public class AnalizadorLexico {
 			if (caracterActual == ':') {
 				palabra += caracterActual;
 				darSiguienteCaracter();
-				if (caracterActual == '+' || caracterActual == '-' || caracterActual == '*' || caracterActual == '/') {
+				if (caracterActual == '+' || caracterActual == '-' || caracterActual == '*' || caracterActual == '/'
+						|| caracterActual == '%') {
 					palabra += caracterActual;
 					listaTokens.add(new Token(palabra, Categoria.OPERADOR_ASIGNACION, filaInicio, columnaInicio));
 					darSiguienteCaracter();
@@ -453,11 +462,20 @@ public class AnalizadorLexico {
 					return true;
 				}
 			} else {
-				darAnteriorCaracter(columnaInicio, filaInicio);
-				return false;
+
+				// Reporte de error si es fin de codigo o cos
+				palabra += caracterActual;
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				darSiguienteCaracter();
+				return true;
+
+				/*
+				 * darAnteriorCaracter(columnaInicio, filaInicio); return false;
+				 */
 			}
 		}
 
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -484,6 +502,7 @@ public class AnalizadorLexico {
 			return true;
 		}
 
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -509,6 +528,34 @@ public class AnalizadorLexico {
 			return true;
 		}
 
+		// RI - Rechazo inmediato
+		return false;
+	}
+
+	/**
+	 * Metodo que permite identificar si un caracter es una corchete izquerdo o
+	 * derecho
+	 * 
+	 * @return true si es una corchete o false si no
+	 */
+	public boolean esCorchete() {
+		String palabra = "";
+		int filaInicio = filaActual;
+		int columnaInicio = columnaActual;
+
+		if (caracterActual == '[') {
+			palabra += caracterActual;
+			listaTokens.add(new Token(palabra, Categoria.CORCHETE_IZQ, filaInicio, columnaInicio));
+			darSiguienteCaracter();
+			return true;
+		} else if (caracterActual == ']') {
+			palabra += caracterActual;
+			listaTokens.add(new Token(palabra, Categoria.CORCHETE_DER, filaInicio, columnaInicio));
+			darSiguienteCaracter();
+			return true;
+		}
+
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -528,6 +575,8 @@ public class AnalizadorLexico {
 			darSiguienteCaracter();
 			return true;
 		}
+
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -686,6 +735,7 @@ public class AnalizadorLexico {
 			}
 		}
 
+		//RE - Rechazo inmediato
 		return false;
 	}
 
@@ -724,9 +774,9 @@ public class AnalizadorLexico {
 						darSiguienteCaracter();
 					} else {
 						palabra += caracterActual;
-						listaTokens.add(new Token(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+						listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
 						darSiguienteCaracter();
-						return false;
+						return true;
 					}
 				}
 			}
@@ -739,15 +789,16 @@ public class AnalizadorLexico {
 				listaTokens.add(new Token(palabra, Categoria.CADENA_CARACTERES, filaInicio, columnaInicio));
 				return true;
 			} else if (palabra.length() == 1) {
-				listaTokens.add(new Token(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
 				return false;
 			} else {
-				listaTokens.add(new Token(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
 				return false;
 			}
 
 		}
 
+		//RE - Rechazo inmediato
 		return false;
 	}
 
@@ -768,7 +819,7 @@ public class AnalizadorLexico {
 			darSiguienteCaracter();
 
 			if (!(caracterActual == '\\')) {
-				if (!(caracterActual == '©')) {
+				if (!(caracterActual == '©') && !(caracterActual == '\n')) {
 					palabra += caracterActual;
 					darSiguienteCaracter();
 
@@ -779,13 +830,14 @@ public class AnalizadorLexico {
 						return true;
 					} else {
 						palabra += caracterActual;
-						listaTokens.add(new Token(palabra, Categoria.ERROR, filaInicio, columnaInicio));
 						darSiguienteCaracter();
-						return false;
+						listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+						return true;
 					}
 				} else {
+					// RE - Reporte de error
 					palabra += caracterActual;
-					listaTokens.add(new Token(palabra, Categoria.CARACTER, filaInicio, columnaInicio));
+					listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
 					darSiguienteCaracter();
 					return true;
 				}
@@ -799,19 +851,27 @@ public class AnalizadorLexico {
 
 					if (caracterActual == '©') {
 						palabra += caracterActual;
-						listaTokens.add(new Token(palabra, Categoria.CARACTER, filaInicio, columnaInicio));
 						darSiguienteCaracter();
+						listaTokens.add(new Token(palabra, Categoria.CARACTER, filaInicio, columnaInicio));
 						return true;
 					} else {
+						// RE - reporte de error
 						palabra += caracterActual;
-						listaTokens.add(new Token(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+						listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
 						darSiguienteCaracter();
-						return false;
+						return true;
 					}
+				}else {
+					// RE - Reporte de error
+					palabra += caracterActual;
+					listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+					darSiguienteCaracter();
+					return true;
 				}
 			}
 		}
 
+		//RE - Rechazo inmediato
 		return false;
 	}
 
@@ -850,9 +910,9 @@ public class AnalizadorLexico {
 						darSiguienteCaracter();
 					} else {
 						palabra += caracterActual;
-						listaTokens.add(new Token(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+						listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
 						darSiguienteCaracter();
-						return false;
+						return true;
 					}
 				}
 			}
@@ -863,19 +923,77 @@ public class AnalizadorLexico {
 			 */
 
 			if (palabra.length() > 1 && palabra.endsWith("^")) {
-				listaTokens.add(new Token(palabra, Categoria.COMENTARIO, filaInicio, columnaInicio));
+				listaTokens.add(new Token(palabra, Categoria.COMENTARIO_BLOQUE, filaInicio, columnaInicio));
 				return true;
 			} else if (palabra.length() == 1) {
-				listaTokens.add(new Token(palabra, Categoria.ERROR, filaInicio, columnaInicio));
-				return false;
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				return true;
 			} else {
-				listaTokens.add(new Token(palabra, Categoria.ERROR, filaInicio, columnaInicio));
-				return false;
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				return true;
 			}
 
 		}
 
-		// Rechazo inmediato
+		// RE - Rechazo inmediato
+		return false;
+	}
+
+	/**
+	 * Metodo que permite verificar si una cadena es un comentario de linea
+	 * 
+	 * @return true si es un comentario de linea false en caso contrario
+	 */
+	public boolean esComentarioLinea() {
+		if (caracterActual == '$') {
+			String palabra = "";
+			int filaInicio = filaActual;
+			int columnaInicio = columnaActual;
+
+			// Transicion
+			palabra += caracterActual;
+			darSiguienteCaracter();
+
+			while (posActual < codigoFuente.length()) {
+				if (!(caracterActual == '\\')) {
+					if (!(caracterActual == '\n')) {
+						palabra += caracterActual;
+						darSiguienteCaracter();
+					} else {
+						// AA - Si hay salto de linea 
+						palabra += caracterActual;
+						darSiguienteCaracter();
+						listaTokens.add(new Token(palabra, Categoria.COMENTARIO_LINEA, filaInicio, columnaInicio));
+						return true;
+					}
+				}else {
+					palabra += caracterActual;
+					darSiguienteCaracter();
+					if (caracterActual=='$') {
+						palabra += caracterActual;
+						darSiguienteCaracter();
+					} else {
+						// RE - Reporte de error
+						palabra += caracterActual;
+						listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+						darSiguienteCaracter();
+						return true;
+					}
+				}
+
+			}
+			
+			if (posActual>=codigoFuente.length()) {
+				// RE - Reporte de error fin de codigo
+				palabra += caracterActual;
+				darSiguienteCaracter();
+				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
+				return true;
+			}
+
+		}
+
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -919,9 +1037,8 @@ public class AnalizadorLexico {
 			int columnaInicio = columnaActual;
 
 			palabra += caracterActual;
-
-			listaTokens.add(new Token(palabra, Categoria.COMA, filaInicio, columnaInicio));
 			darSiguienteCaracter();
+			listaTokens.add(new Token(palabra, Categoria.COMA, filaInicio, columnaInicio));
 			return true;
 		}
 		// Rechazo inmediato
@@ -940,9 +1057,8 @@ public class AnalizadorLexico {
 			int columnaInicio = columnaActual;
 
 			palabra += caracterActual;
-
-			listaTokens.add(new Token(palabra, Categoria.FIN_DE_SENTENCIA, filaInicio, columnaInicio));
 			darSiguienteCaracter();
+			listaTokens.add(new Token(palabra, Categoria.FIN_DE_SENTENCIA, filaInicio, columnaInicio));
 			return true;
 		}
 		// Rechazo inmediato
