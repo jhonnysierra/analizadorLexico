@@ -213,6 +213,7 @@ public class AnalizadorLexico {
 
 		}
 
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -244,7 +245,7 @@ public class AnalizadorLexico {
 					darSiguienteCaracter();
 				}
 
-				if (!(palabra.equals("¿JHONNY") || palabra.equals("¿JORGE"))) {
+				if (!(palabra.equals("¿JHONNY") || palabra.equals("¿JORGE") || palabra.equals("¿CARLOS"))) {
 					listaTokens.add(new Token(palabra, Categoria.IDENTIFICADOR, filaInicio, columnaInicio));
 					return true;
 				} else {
@@ -468,10 +469,6 @@ public class AnalizadorLexico {
 				listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
 				darSiguienteCaracter();
 				return true;
-
-				/*
-				 * darAnteriorCaracter(columnaInicio, filaInicio); return false;
-				 */
 			}
 		}
 
@@ -597,6 +594,7 @@ public class AnalizadorLexico {
 			darSiguienteCaracter();
 			return true;
 		}
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -638,6 +636,7 @@ public class AnalizadorLexico {
 				return false;
 			}
 		}
+		// RI - Rechazo inmediato
 		return false;
 	}
 
@@ -876,10 +875,10 @@ public class AnalizadorLexico {
 	}
 
 	/**
-	 * Metodo que permite verificar si una cadena es un comenatario. Un comentario
+	 * Metodo que permite verificar si una cadena es un comentario de bloque. Un comentario
 	 * valido debe estar encerrado entre ASCII(94)
 	 * 
-	 * @return true si es comentario o false si no
+	 * @return true si es comentario de bloque o false si no
 	 */
 	public boolean esComentario() {
 		if (caracterActual == '^') {

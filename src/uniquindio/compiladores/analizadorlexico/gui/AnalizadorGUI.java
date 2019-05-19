@@ -92,7 +92,7 @@ public class AnalizadorGUI extends JFrame {
 		mnNewMenu.add(menuSalir);
 		menuAcercade.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Desarrollado por:\nJhonny Sierra\nJorge Mesa", "Acerca de",
+				JOptionPane.showMessageDialog(null, "Analizador Léxico JORJHO V 2.0\n\nDesarrollado por:\nJhonny Sierra\nJorge Mesa\nCarlos Lopez", "Acerca de",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
@@ -225,7 +225,12 @@ public class AnalizadorGUI extends JFrame {
 					al.analizar();
 
 					limpiarTablas();
-
+					
+					JOptionPane.showMessageDialog(null, "Análisis terminado", "EXITOSO",
+							JOptionPane.INFORMATION_MESSAGE);
+					
+					tabbedPane.setSelectedIndex(0);
+					
 					fila = new Object[dtm.getColumnCount()];
 					
 					fila2 = new Object[dtmErrores.getColumnCount()];
