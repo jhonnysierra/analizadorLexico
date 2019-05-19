@@ -229,11 +229,9 @@ public class AnalizadorLexico {
 		if (caracterActual == '¿') {
 
 			String palabra = "";
-			int filaInicio = filaActual, filaTemporal;
-			int columnaInicio = columnaActual, columnaTemporal;
+			int filaInicio = filaActual;
+			int columnaInicio = columnaActual;
 
-			filaTemporal = filaInicio;
-			columnaTemporal = columnaInicio;
 			// Transicion
 			palabra += caracterActual;
 			darSiguienteCaracter();
