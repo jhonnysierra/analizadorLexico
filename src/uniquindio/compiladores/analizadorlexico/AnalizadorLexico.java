@@ -101,8 +101,18 @@ public class AnalizadorLexico {
 			 * se clasifica como desconocido
 			 */
 			if (posActual < codigoFuente.length()) {
-				listaTokens.add(new Token("" + caracterActual, Categoria.DESCONOCIDO, filaActual, columnaActual));
-				darSiguienteCaracter();
+
+				/*
+				 * Condición para corregir error que si no encuentra categoría para un espacio
+				 * no lo ponga como desconocido. Ocurre cuanto se retorna false y continúa la secuencia
+				 */
+				if (caracterActual == ' ' || caracterActual == '\n' || caracterActual == '\t') {
+					darSiguienteCaracter();
+				} else {
+					listaTokens.add(new Token("" + caracterActual, Categoria.DESCONOCIDO, filaActual, columnaActual));
+					darSiguienteCaracter();
+				}
+
 			}
 		}
 	}
@@ -732,7 +742,7 @@ public class AnalizadorLexico {
 			}
 		}
 
-		//RE - Rechazo inmediato
+		// RE - Rechazo inmediato
 		return false;
 	}
 
@@ -795,7 +805,7 @@ public class AnalizadorLexico {
 
 		}
 
-		//RE - Rechazo inmediato
+		// RE - Rechazo inmediato
 		return false;
 	}
 
@@ -858,7 +868,7 @@ public class AnalizadorLexico {
 						darSiguienteCaracter();
 						return true;
 					}
-				}else {
+				} else {
 					// RE - Reporte de error
 					palabra += caracterActual;
 					listaErrores.add(new ErrorLexico(palabra, Categoria.ERROR, filaInicio, columnaInicio));
@@ -868,13 +878,13 @@ public class AnalizadorLexico {
 			}
 		}
 
-		//RE - Rechazo inmediato
+		// RE - Rechazo inmediato
 		return false;
 	}
 
 	/**
-	 * Metodo que permite verificar si una cadena es un comentario de bloque. Un comentario
-	 * valido debe estar encerrado entre ASCII(94)
+	 * Metodo que permite verificar si una cadena es un comentario de bloque. Un
+	 * comentario valido debe estar encerrado entre ASCII(94)
 	 * 
 	 * @return true si es comentario de bloque o false si no
 	 */
@@ -957,16 +967,16 @@ public class AnalizadorLexico {
 						palabra += caracterActual;
 						darSiguienteCaracter();
 					} else {
-						// AA - Si hay salto de linea 
+						// AA - Si hay salto de linea
 						palabra += caracterActual;
 						darSiguienteCaracter();
 						listaTokens.add(new Token(palabra, Categoria.COMENTARIO_LINEA, filaInicio, columnaInicio));
 						return true;
 					}
-				}else {
+				} else {
 					palabra += caracterActual;
 					darSiguienteCaracter();
-					if (caracterActual=='$') {
+					if (caracterActual == '$') {
 						palabra += caracterActual;
 						darSiguienteCaracter();
 					} else {
@@ -979,8 +989,8 @@ public class AnalizadorLexico {
 				}
 
 			}
-			
-			if (posActual>=codigoFuente.length()) {
+
+			if (posActual >= codigoFuente.length()) {
 				// RE - Reporte de error fin de codigo
 				palabra += caracterActual;
 				darSiguienteCaracter();
