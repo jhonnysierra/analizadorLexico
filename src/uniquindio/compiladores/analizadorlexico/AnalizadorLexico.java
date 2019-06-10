@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Clase que representa un Analizador Lexico del compilador
  * 
- * @author JHONNY_JORGE
+ * @author JHONNY_JORGE_CARLOS
  *
  */
 public class AnalizadorLexico {
@@ -220,7 +220,7 @@ public class AnalizadorLexico {
 	/**
 	 * Permite ver si una cadena es un identificador. Un identificador inicia con ¿
 	 * seguido del conjunto L. Dentro de esta categoria estan las siguientes
-	 * palabras reservadas(en mayusculas) ¿JHONNY ¿SORAYA ¿CAMILO
+	 * palabras reservadas(en mayusculas) ¿JHONNY ¿JORGE ¿CARLOS
 	 * 
 	 * @return true si es identificador false si no
 	 */
