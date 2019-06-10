@@ -1,2 +1,1 @@
 # Compilador
-# carlos lopez
