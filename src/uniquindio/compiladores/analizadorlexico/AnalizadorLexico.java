@@ -12,6 +12,7 @@ public class AnalizadorLexico {
 
 	private ArrayList<Token> listaTokens;
 	private ArrayList<ErrorLexico> listaErrores;
+	private ArrayList<String> palabrasReservadas;
 	private String codigoFuente;
 	private int posActual, filaActual, columnaActual;
 	private char caracterActual;
@@ -25,6 +26,11 @@ public class AnalizadorLexico {
 		this.codigoFuente = codigoFuente;
 		this.listaTokens = new ArrayList<>();
 		this.listaErrores = new ArrayList<>();
+		this.palabrasReservadas = new ArrayList<>();
+		this.palabrasReservadas.add("¿function");
+		this.palabrasReservadas.add("¿JHONNY");
+		this.palabrasReservadas.add("¿JORGE");
+		this.palabrasReservadas.add("¿CARLOS");
 		this.caracterActual = codigoFuente.charAt(0);
 		// El caracter del entero 0 representa un caracter nulo
 		this.posActual = 0;
@@ -104,7 +110,8 @@ public class AnalizadorLexico {
 
 				/*
 				 * Condición para corregir error que si no encuentra categoría para un espacio
-				 * no lo ponga como desconocido. Ocurre cuanto se retorna false y continúa la secuencia
+				 * no lo ponga como desconocido. Ocurre cuanto se retorna false y continúa la
+				 * secuencia
 				 */
 				if (caracterActual == ' ' || caracterActual == '\n' || caracterActual == '\t') {
 					darSiguienteCaracter();
@@ -253,7 +260,7 @@ public class AnalizadorLexico {
 					darSiguienteCaracter();
 				}
 
-				if (!(palabra.equals("¿JHONNY") || palabra.equals("¿JORGE") || palabra.equals("¿CARLOS"))) {
+				if (!palabrasReservadas.contains(palabra)) {
 					listaTokens.add(new Token(palabra, Categoria.IDENTIFICADOR, filaInicio, columnaInicio));
 					return true;
 				} else {

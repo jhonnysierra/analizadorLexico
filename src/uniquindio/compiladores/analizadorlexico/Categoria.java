@@ -35,6 +35,7 @@ public enum Categoria {
 	PUNTO,
 	COMA,
 	FIN_DE_SENTENCIA,
+	DOS_PUNTOS,
 	DESCONOCIDO
 	
 }

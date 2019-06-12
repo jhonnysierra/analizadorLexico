@@ -33,7 +33,7 @@ import java.awt.Color;
 /**
  * Clase que lanza la aplicacion del analizador lexico
  * 
- * @author JHONNY_JORGE
+ * @author JHONNY_JORGE_CARLOS
  *
  */
 public class AnalizadorGUI extends JFrame {
