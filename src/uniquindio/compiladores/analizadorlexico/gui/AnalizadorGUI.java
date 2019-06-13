@@ -16,6 +16,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import uniquindio.compiladores.analizadorSintactico.AnalizadorSintactico;
 import uniquindio.compiladores.analizadorlexico.AnalizadorLexico;
 import uniquindio.compiladores.analizadorlexico.ErrorLexico;
 import uniquindio.compiladores.analizadorlexico.Token;
@@ -223,6 +224,8 @@ public class AnalizadorGUI extends JFrame {
 				} else {
 					AnalizadorLexico al = new AnalizadorLexico(codigoFuente);
 					al.analizar();
+					
+					AnalizadorSintactico as= new AnalizadorSintactico(al.getListaTokens());
 
 					limpiarTablas();
 					
@@ -260,6 +263,9 @@ public class AnalizadorGUI extends JFrame {
 						System.out.printf("%-20s%-20s%-20s%-20s\n", error.getPalabra(), error.getCategoria(),
 								error.getFila(), error.getColumna());
 					}
+					
+					as.analizar();
+					System.out.println("Unidad de compilacion\n"+as.getUnidadDeCompilacion());
 					
 				}
 
