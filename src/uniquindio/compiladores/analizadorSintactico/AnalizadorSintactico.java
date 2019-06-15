@@ -56,8 +56,8 @@ public class AnalizadorSintactico {
 	}
 
 	/**
-	 * <Funcion> ::= function <tipoRetorno> identificador "(" [<ListaParametros>]
-	 * ")" "{" [<ListaSentencias>] "}"
+	 * <Funcion> ::= function <tipoRetorno> identificador "«" [<ListaParametros>]
+	 * "»" "{" [<ListaSentencias>] "}"
 	 */
 	public Funcion esFuncion() {
 
@@ -134,26 +134,58 @@ public class AnalizadorSintactico {
 	}
 
 	/**
-	 * <Sentencia> ::= <Ciclo>
+	 * <Sentencia> ::= <Decision> | <Declaracion> | <Invocacion> | <Impresion> |
+	 * <Ciclo> | <Retorno> | <Lectura>| <ExpresionAsignacion>|
 	 */
 	public Sentencia esSentencia() {
 
-		Sentencia s = esCiclo();
+		//Sentencia s = esCiclo();
 
-		if (s != null) {
-			return s;
+		Sentencia declaracion = esDeclaracion();
+		if (declaracion != null) {
+			return declaracion;
 		}
+		
 
 		return null;
 	}
 
 	/**
-	 * <Ciclo> ::= Hacer BNF
+	 * <Ciclo> ::= ¿ciclo "«"<ExpresionRelacional>"»" do "["[<listaSentencias>]"]"
 	 */
 	public Ciclo esCiclo() {
-		/*
-		 * TODO Completar
-		 */
+
+		return null;
+	}
+
+	public Declaracion esDeclaracion() {
+		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿var")) {
+			obtenerSgteToken();
+
+			Token tipoDato = null;
+			tipoDato = esTipoDato();
+
+			if (tipoDato != null) {
+				obtenerSgteToken();
+
+				if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
+					Token nombre = tokenActual;
+					obtenerSgteToken();					
+					if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
+						obtenerSgteToken();
+						return new Declaracion(tipoDato,nombre);
+					} else {
+						reportarError("Falta el fin de sentencia");
+					}
+				} else {
+					reportarError("Falta el identificador");
+				}
+
+			} else {
+				reportarError("Falta el tipo de dato");
+			}
+		}
+
 		return null;
 	}
 
@@ -171,7 +203,7 @@ public class AnalizadorSintactico {
 
 			if (tokenActual.getCategoria() == Categoria.COMA) {
 				obtenerSgteToken();
-				p = esParametroVarios();
+				p = esParametro();
 			} else {
 				p = null;
 			}

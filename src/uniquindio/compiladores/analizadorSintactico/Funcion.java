@@ -1,14 +1,7 @@
 package uniquindio.compiladores.analizadorSintactico;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-
-import jdk.management.resource.NotifyingMeter;
 import uniquindio.compiladores.analizadorlexico.Token;
 
 public class Funcion {
@@ -71,6 +64,18 @@ public class Funcion {
 			nodo.add(new DefaultMutableTreeNode("Parametros: Sin parámetros "));
 		}
 		
+		if (listaSentencias != null) {
+			DefaultMutableTreeNode sentencias = new DefaultMutableTreeNode("Sentencias");	
+			
+			for (Sentencia sentencia : listaSentencias) {
+				sentencias.add(sentencia.getArbolVisual());
+			}
+			nodo.add(sentencias);
+		}else {
+			nodo.add(new DefaultMutableTreeNode("Sentencias: Sin sentencias "));
+		}
+		
+
 		return nodo;
 	}
 

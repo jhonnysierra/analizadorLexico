@@ -1,9 +1,9 @@
 package uniquindio.compiladores.analizadorSintactico;
 
+import uniquindio.compiladores.analizadorlexico.Token;
+
 public class Ciclo extends Sentencia {
 
-	/*
-	 * TODO Condición y Lista de Sentencias
-	 */
+	private Token nombre;
 	
 }
