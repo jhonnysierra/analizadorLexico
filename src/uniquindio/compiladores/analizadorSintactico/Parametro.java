@@ -4,26 +4,26 @@ import uniquindio.compiladores.analizadorlexico.Token;
 
 public class Parametro {
 
-	private Token nombre, tipoDato;
+	private Token tipoDato , nombre ;
 
-	public Parametro(Token nombre, Token tipoDato) {
+	public Parametro(Token tipoDato, Token nombre) {
 		super();
-		this.nombre = nombre;
 		this.tipoDato = tipoDato;
+		this.nombre = nombre;
+		
 	}
 
-	public void setNombre(Token nombre) {
-		this.nombre = nombre;
+	public Token getTipoDato() {
+		return tipoDato;
 	}
 
-	public void setTipoDato(Token tipoDato) {
-		this.tipoDato = tipoDato;
+	public Token getNombre() {
+		return nombre;
 	}
 
 	@Override
 	public String toString() {
-		return "Parametro [nombre=" + nombre + ", tipoDato=" + tipoDato + "]";
+		return "Parametro [tipoDato=" + tipoDato + ", nombre=" + nombre + "]";
 	}
-
 	
 }

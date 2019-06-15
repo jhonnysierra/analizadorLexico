@@ -75,24 +75,28 @@ public class AnalizadorSintactico {
 					if (tokenActual.getCategoria() == Categoria.PARENTESIS_IZQ) {
 						obtenerSgteToken();
 
-						ArrayList<Parametro> parametros = esListaParametros();
+						ArrayList<Parametro> parametros = null;
+
+						if (tokenActual.getCategoria() != Categoria.PARENTESIS_DER) {
+							parametros = esListaParametros();
+						}
 
 						if (tokenActual.getCategoria() == Categoria.PARENTESIS_DER) {
 							obtenerSgteToken();
 							if (tokenActual.getCategoria() == Categoria.LLAVE_IZQ) {
-								obtenerSgteToken();	
-								
+								obtenerSgteToken();
+
 								ArrayList<Sentencia> sentencias = esListaSentencias();
-								
-								if (tokenActual.getCategoria()==Categoria.LLAVE_DER) {
+
+								if (tokenActual.getCategoria() == Categoria.LLAVE_DER) {
 									obtenerSgteToken();
-									return new Funcion(nombreFuncion, parametros, tipoRetorno, sentencias);	
-								}else {
+									return new Funcion(nombreFuncion, parametros, tipoRetorno, sentencias);
+								} else {
 									reportarError("Falta llave derecha");
 								}
-								
-							}else {
-								reportarError("Falta llave izquierda");	
+
+							} else {
+								reportarError("Falta llave izquierda");
 							}
 						} else {
 							reportarError("Falta par�ntesis derecho");
@@ -107,59 +111,6 @@ public class AnalizadorSintactico {
 				reportarError("Falta el tipo de retorno");
 			}
 
-			/// --------------------
-			if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
-				Token nombreFuncion = tokenActual;
-				obtenerSgteToken();
-
-				if (tokenActual.getCategoria() == Categoria.PARENTESIS_IZQ) {
-					obtenerSgteToken();
-
-					ArrayList<Parametro> parametros = esListaParametros();
-
-					if (tokenActual.getCategoria() == Categoria.PARENTESIS_DER) {
-						obtenerSgteToken();
-						// Token tipoRetorno = null;
-
-						if (tokenActual.getCategoria() == Categoria.DOS_PUNTOS) {
-							obtenerSgteToken();
-
-							tipoRetorno = esTipoRetorno();
-
-							if (tipoRetorno != null) {
-								obtenerSgteToken();
-							} else {
-								reportarError("Falta el tipo de retorno");
-							}
-
-						}
-
-						if (tokenActual.getCategoria() == Categoria.LLAVE_IZQ) {
-							obtenerSgteToken();
-
-							ArrayList<Sentencia> sentencias = esListaSentencias();
-
-							if (tokenActual.getCategoria() == Categoria.LLAVE_DER) {
-								obtenerSgteToken();
-								return new Funcion(nombreFuncion, parametros, tipoRetorno, sentencias);
-							} else {
-								reportarError("Falta la llave derecha");
-							}
-
-						} else {
-							reportarError("Falta la llave izquierda");
-						}
-
-					} else {
-						reportarError("Falta el paréntesis derecho");
-					}
-
-				} else {
-					reportarError("Falta el paréntesis izquierdo");
-				}
-			} else {
-				reportarError("Falta el nombre de la función");
-			}
 		}
 
 		return null;
@@ -220,7 +171,7 @@ public class AnalizadorSintactico {
 
 			if (tokenActual.getCategoria() == Categoria.COMA) {
 				obtenerSgteToken();
-				p = esParametro();
+				p = esParametroVarios();
 			} else {
 				p = null;
 			}
@@ -231,32 +182,57 @@ public class AnalizadorSintactico {
 	}
 
 	/**
-	 * <Parametro> ::= identificador":"<TipoDeDato> <Parametro> ::= <TipoDeDato>
-	 * identificador
+	 * <Parametro> ::= <TipoDeDato> identificador
 	 */
 	public Parametro esParametro() {
 		Token tipoDato = esTipoDato();
 
 		if (tipoDato != null) {
-			Token nombre = tokenActual;
 			obtenerSgteToken();
-
 			if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
+				Token nombre = tokenActual;
 				obtenerSgteToken();
-
-				return new Parametro(nombre, tipoDato);
+				return new Parametro(tipoDato, nombre);
 
 			} else {
-				reportarError("Falta identificador");
+				reportarError("Falta identificador en lista de parametros");
 			}
-
-		}else {
-			reportarError("Falta tipo dato");
+		} else {
+			reportarError("Falta tipo de dato en lista de parametros");
 		}
-
 		return null;
 	}
 
+	/**
+	 * Metodo que analiza si es parametro cuando en la lista hay mas de un parametro
+	 * 
+	 * @return
+	 */
+	public Parametro esParametroVarios() {
+		Token tipoDato = esTipoDato();
+
+		if (tipoDato != null) {
+			obtenerSgteToken();
+			if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
+				Token nombre = tokenActual;
+				obtenerSgteToken();
+				return new Parametro(tipoDato, nombre);
+
+			} else {
+				reportarError("Falta identificador en lista de parametros");
+			}
+
+		} else {
+			reportarError("Falta tipo de dato en lista de parametros");
+		}
+		return null;
+	}
+
+	/**
+	 * Metodo que permite agregar un error a la lista de errores
+	 * 
+	 * @param mensaje que se muestra al usuario
+	 */
 	public void reportarError(String mensaje) {
 		tablaErrores.add(new ErrorSintactico(mensaje, tokenActual.getFila(), tokenActual.getColumna()));
 	}
@@ -302,6 +278,21 @@ public class AnalizadorSintactico {
 			tokenActual = new Token("", Categoria.ERROR, 0, 0);
 		}
 
+	}
+
+	/**
+	 * Obtiene el token en la posicion indicada sin alterar el token actual de la
+	 * ejecucion.
+	 */
+	public Token obtenerTokenPosicionN(int posicionToken) {
+		Token tokenEncontrado;
+
+		if (posicionToken < tablaToken.size()) {
+			tokenEncontrado = tablaToken.get(posicionToken);
+		} else {
+			tokenEncontrado = null;
+		}
+		return tokenEncontrado;
 	}
 
 	public UnidadDeCompilacion getUnidadDeCompilacion() {
