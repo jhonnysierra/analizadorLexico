@@ -1,7 +1,7 @@
 package uniquindio.compiladores.analizadorSintactico;
 
 /**
- * Clase que representa un error sintáctico del compilador
+ * Clase que representa un error sintactico del compilador
  * @author caflorezvi
  *
  */
