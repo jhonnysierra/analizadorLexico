@@ -30,6 +30,7 @@ import uniquindio.compiladores.analizadorSintactico.ErrorSintactico;
 import uniquindio.compiladores.analizadorlexico.AnalizadorLexico;
 import uniquindio.compiladores.analizadorlexico.ErrorLexico;
 import uniquindio.compiladores.analizadorlexico.Token;
+import javax.swing.JTree;
 
 /**
  * Clase que lanza la aplicacion del analizador lexico
@@ -152,6 +153,8 @@ public class AnalizadorGUI extends JFrame {
 				.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 365, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 
+		JTree treeSyntax = new JTree();
+
 		JScrollPane scrollPane = new JScrollPane();
 		tabbedPane.addTab("Tokens", null, scrollPane, null);
 
@@ -241,6 +244,9 @@ public class AnalizadorGUI extends JFrame {
 					al.analizar();
 
 					AnalizadorSintactico as = new AnalizadorSintactico(al.getListaTokens());
+					as.analizar();
+					
+					scrollPane_3.setViewportView((new JTree(as.getUnidadDeCompilacion().getArbolVisual())));
 
 					limpiarTablas();
 
@@ -285,30 +291,25 @@ public class AnalizadorGUI extends JFrame {
 								error.getFila(), error.getColumna());
 					}
 
-
 					System.out.println();
 					as.analizar();
 					System.out.println("Unidad de compilacion\n" + as.getUnidadDeCompilacion());
 					System.out.println("ERRORES SINTACTICOS\n" + as.getTablaErrores());
-					
-					
+
 					System.out.println("\nLISTA DE ERRORES SINTACTICOS");
 					System.out.printf("%-20s%-20s%-20s\n", "MENSAJE", "FILA", "COLUMNA");
 
 					// Carga de errores sintacticos encontrados en la tabla
 					for (ErrorSintactico error : as.getTablaErrores()) {
-						
+
 						fila3[0] = error.getMensaje();
 						fila3[1] = error.getFila();
 						fila3[2] = error.getColumna();
 
 						dtmErroresSintacticos.addRow(fila3);
 
-						System.out.printf("%-20s%-20s%-20s\n", error.getMensaje(), error.getFila(),
-								error.getColumna());
+						System.out.printf("%-20s%-20s%-20s\n", error.getMensaje(), error.getFila(), error.getColumna());
 					}
-					
-					
 
 				}
 
@@ -329,7 +330,7 @@ public class AnalizadorGUI extends JFrame {
 		for (int i = dtmErrores.getRowCount() - 1; i >= 0; i--) {
 			dtmErrores.removeRow(i);
 		}
-		
+
 		for (int i = dtmErroresSintacticos.getRowCount() - 1; i >= 0; i--) {
 			dtmErroresSintacticos.removeRow(i);
 		}
