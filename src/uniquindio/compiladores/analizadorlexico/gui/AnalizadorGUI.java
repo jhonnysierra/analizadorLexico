@@ -291,13 +291,9 @@ public class AnalizadorGUI extends JFrame {
 								error.getFila(), error.getColumna());
 					}
 
-					System.out.println();
-					as.analizar();
-					System.out.println("Unidad de compilacion\n" + as.getUnidadDeCompilacion());
+					System.out.println("\nUnidad de compilacion\n" + as.getUnidadDeCompilacion());
 					System.out.println("ERRORES SINTACTICOS\n" + as.getTablaErrores());
 
-					System.out.println("\nLISTA DE ERRORES SINTACTICOS");
-					System.out.printf("%-20s%-20s%-20s\n", "MENSAJE", "FILA", "COLUMNA");
 
 					// Carga de errores sintacticos encontrados en la tabla
 					for (ErrorSintactico error : as.getTablaErrores()) {

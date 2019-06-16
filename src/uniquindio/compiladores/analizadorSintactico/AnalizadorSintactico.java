@@ -1,7 +1,6 @@
 package uniquindio.compiladores.analizadorSintactico;
 
 import java.util.ArrayList;
-
 import uniquindio.compiladores.analizadorlexico.Categoria;
 import uniquindio.compiladores.analizadorlexico.Token;
 
@@ -86,7 +85,11 @@ public class AnalizadorSintactico {
 							if (tokenActual.getCategoria() == Categoria.LLAVE_IZQ) {
 								obtenerSgteToken();
 
-								ArrayList<Sentencia> sentencias = esListaSentencias();
+								ArrayList<Sentencia> sentencias = null;
+
+								if (tokenActual.getCategoria() != Categoria.LLAVE_DER) {
+									sentencias = esListaSentencias();
+								}
 
 								if (tokenActual.getCategoria() == Categoria.LLAVE_DER) {
 									obtenerSgteToken();
@@ -139,13 +142,19 @@ public class AnalizadorSintactico {
 	 */
 	public Sentencia esSentencia() {
 
-		//Sentencia s = esCiclo();
+		// Sentencia s = esCiclo();
 
 		Sentencia declaracion = esDeclaracion();
+
 		if (declaracion != null) {
 			return declaracion;
 		}
-		
+
+		Sentencia expresionAsigancion = esExpresionAsignacion();
+
+		if (expresionAsigancion != null) {
+			return expresionAsigancion;
+		}
 
 		return null;
 	}
@@ -170,10 +179,10 @@ public class AnalizadorSintactico {
 
 				if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
 					Token nombre = tokenActual;
-					obtenerSgteToken();					
+					obtenerSgteToken();
 					if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
 						obtenerSgteToken();
-						return new Declaracion(tipoDato,nombre);
+						return new Declaracion(tipoDato, nombre);
 					} else {
 						reportarError("Falta el fin de sentencia");
 					}
@@ -236,31 +245,6 @@ public class AnalizadorSintactico {
 	}
 
 	/**
-	 * Metodo que analiza si es parametro cuando en la lista hay mas de un parametro
-	 * 
-	 * @return
-	 */
-	public Parametro esParametroVarios() {
-		Token tipoDato = esTipoDato();
-
-		if (tipoDato != null) {
-			obtenerSgteToken();
-			if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
-				Token nombre = tokenActual;
-				obtenerSgteToken();
-				return new Parametro(tipoDato, nombre);
-
-			} else {
-				reportarError("Falta identificador en lista de parametros");
-			}
-
-		} else {
-			reportarError("Falta tipo de dato en lista de parametros");
-		}
-		return null;
-	}
-
-	/**
 	 * Metodo que permite agregar un error a la lista de errores
 	 * 
 	 * @param mensaje que se muestra al usuario
@@ -301,6 +285,132 @@ public class AnalizadorSintactico {
 		return null;
 	}
 
+	/**
+	 * <Termino>::= identificador | numero
+	 * 
+	 */
+	public Token esTermino() {
+		if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR || tokenActual.getCategoria() == Categoria.ENTERO
+				|| tokenActual.getCategoria() == Categoria.REAL) {
+			return tokenActual;
+		}
+		return null;
+	}
+
+	/**
+	 * <Expresion>::= <ExpresionAritmetica> | <ExpresionRelacional> |
+	 * <ExpresionCadena>
+	 */
+	public Expresion esExpresion() {
+
+		ExpresionAritmetica expAritmetica = esExpresionAritmetica();
+
+		if (expAritmetica != null) {
+			return expAritmetica;
+		}
+
+		return null;
+	}
+
+	/**
+	 * <ExpresionA>::= <Termino> | <Expresion> | <tru> | <fa>
+	 */
+	public Expresion esExpresionA() {
+
+		Expresion expresion = esExpresion();
+		Token termino = esTermino();
+
+		if (expresion != null) {
+			return expresion;
+		}
+
+		return null;
+	}
+
+	/**
+	 * <ExpresionAritmetica>::= <Termino> operador aritmetico <Termino>
+	 */
+	public ExpresionAritmetica esExpresionAritmetica() {
+		Token termino1 = esTermino();
+
+		if (termino1 != null) {
+			obtenerSgteToken();
+			if (tokenActual.getCategoria() == Categoria.OPERADOR_ARITMETICO) {
+				Token operador = tokenActual;
+				obtenerSgteToken();
+				Token termino2 = esTermino();
+
+				if (termino2 != null) {
+					obtenerSgteToken();
+					return new ExpresionAritmetica(termino1, operador, termino2);
+				} else {
+					reportarError("Falta segundo término en la expresión aritmética");
+				}
+			} else {
+				obtenerTokenPosicionN(posActual - 1);
+				// reportarError("Falta el operador aritmético en la expresión");
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * <ExpresionAsignacion>::= identificador operadorAsignacion <ExpresionA>
+	 */
+	public ExpresionAsignacion esExpresionAsignacion() {
+		if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
+			Token nombre = tokenActual;
+			obtenerSgteToken();
+
+			if (tokenActual.getCategoria() == Categoria.OPERADOR_ASIGNACION) {
+				obtenerSgteToken();
+
+				Expresion expresion = esExpresion();
+				Token termino = esTermino();
+
+				if (expresion != null) {
+					if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
+						obtenerSgteToken();
+						return new ExpresionAsignacion(nombre, expresion);
+					} else {
+						reportarError("Falta fin de sentencia en la expresión de asignación");
+					}
+
+				} else if (termino != null) {
+					obtenerSgteToken();
+					if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
+						obtenerSgteToken();
+						return new ExpresionAsignacion(nombre, termino);
+					} else {
+						reportarError("Falta fin de sentencia en la expresión de asignación");
+					}
+				} else if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA
+						&& tokenActual.getPalabra().equals("¿tru")
+						|| tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA
+								&& tokenActual.getPalabra().equals("¿fa")) {
+					Token expresionA= tokenActual;
+					obtenerSgteToken();
+					if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
+						obtenerSgteToken();
+						return new ExpresionAsignacion(nombre, expresionA);
+					} else {
+						reportarError("Falta fin de sentencia en la expresión de asignación");
+					}
+
+				} else {
+					reportarError("Falta expresión en la expresión de asignación");
+				}
+
+			} else {
+				reportarError("Falta el operador de asignación en la expresión de asignación");
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Obtiene el siguiente token de la tabla de tokens
+	 */
 	public void obtenerSgteToken() {
 		posActual++;
 
@@ -316,15 +426,13 @@ public class AnalizadorSintactico {
 	 * Obtiene el token en la posicion indicada sin alterar el token actual de la
 	 * ejecucion.
 	 */
-	public Token obtenerTokenPosicionN(int posicionToken) {
-		Token tokenEncontrado;
-
+	public void obtenerTokenPosicionN(int posicionToken) {
+		posActual = posicionToken;
 		if (posicionToken < tablaToken.size()) {
-			tokenEncontrado = tablaToken.get(posicionToken);
+			tokenActual = tablaToken.get(posicionToken);
 		} else {
-			tokenEncontrado = null;
+			tokenActual = new Token("", Categoria.ERROR, 0, 0);
 		}
-		return tokenEncontrado;
 	}
 
 	public UnidadDeCompilacion getUnidadDeCompilacion() {

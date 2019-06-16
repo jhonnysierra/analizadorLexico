@@ -27,7 +27,7 @@ public class Declaracion extends Sentencia{
 	}
 	
 	/**
-	 * Devuelve el arbol visual de la clase parametro
+	 * Devuelve el arbol visual de la clase declaracion
 	 * @return
 	 */
 	public DefaultMutableTreeNode getArbolVisual() {

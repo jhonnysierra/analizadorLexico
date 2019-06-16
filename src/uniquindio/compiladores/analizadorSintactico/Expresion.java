@@ -3,14 +3,16 @@ package uniquindio.compiladores.analizadorSintactico;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
- * Clase que representa una Sentencia del lenguaje
+ * Clase que representa una expresion del lenguaje
  *  
- * @author JHONNY - JORGE - CARLOS
+ * <Expresion>::=<ExpresionAritmetica> | <ExpresionRelacional> | <ExpresionCadena>
+ * 
+ * @author JHONNY_JORGE_CARLOS
  *
  */
-public abstract class Sentencia {
+public abstract class Expresion {
 
-	public Sentencia() {
+	public Expresion() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -18,5 +20,4 @@ public abstract class Sentencia {
 	public DefaultMutableTreeNode getArbolVisual() {
 		return null;
 	}
-
 }

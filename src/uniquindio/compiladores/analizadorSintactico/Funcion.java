@@ -43,11 +43,12 @@ public class Funcion {
 	}
 
 	/**
-	 * Devuele el arbol visual para la clase funcion.
+	 * Devuelve el arbol visual para la clase funcion.
 	 * 
 	 * @return
 	 */
 	public DefaultMutableTreeNode getArbolVisual() {
+		
 		DefaultMutableTreeNode nodo = new DefaultMutableTreeNode("Función");
 
 		nodo.add(new DefaultMutableTreeNode("Tipo Retorno: " + tipoRetorno.getPalabra()));
@@ -72,7 +73,7 @@ public class Funcion {
 			}
 			nodo.add(sentencias);
 		}else {
-			nodo.add(new DefaultMutableTreeNode("Sentencias: Sin sentencias "));
+			nodo.add(new DefaultMutableTreeNode("Sentencias: Sin sentencias"));
 		}
 		
 

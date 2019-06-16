@@ -43,6 +43,8 @@ public class AnalizadorLexico {
 		this.palabrasReservadas.add("¿read");
 		this.palabrasReservadas.add("¿give");
 		this.palabrasReservadas.add("¿none");
+		this.palabrasReservadas.add("¿tru");
+		this.palabrasReservadas.add("¿fa");
 		this.caracterActual = codigoFuente.charAt(0);
 		// El caracter del entero 0 representa un caracter nulo
 		this.posActual = 0;
