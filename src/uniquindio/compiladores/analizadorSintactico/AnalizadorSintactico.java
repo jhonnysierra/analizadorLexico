@@ -168,6 +168,12 @@ public class AnalizadorSintactico {
 			return lectura;
 		}
 
+		Sentencia retorno = esRetorno();
+		
+		if (retorno != null) {
+			return retorno;
+		}
+		
 		return null;
 	}
 
@@ -180,7 +186,7 @@ public class AnalizadorSintactico {
 	}
 
 	/**
-	 * <Impresion>::= ¿PRINT <ExpresionCadena>_
+	 * <Impresion>::= ¿PRINT <ExpresionCadena> "_"
 	 */
 	public Impresion esImpresion() {
 		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿PRINT")) {
@@ -229,7 +235,35 @@ public class AnalizadorSintactico {
 
 		return null;
 	}
+	
+	/**
+	 * <Rertorno>::= ¿GIVE <Expresion> "_"
+	 */
+	public Retorno esRetorno() {
+		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿GIVE")) {
+			obtenerSgteToken();
 
+			Expresion expresion = esExpresion();
+
+			if (expresion != null) {
+				if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
+					obtenerSgteToken();
+					return new Retorno(expresion);
+				} else {
+					reportarError("Falta fin de sentencia en el retorno");
+				}
+
+			} else {
+				reportarError("Falta la expresión en el retorno");
+			}
+
+		}
+		return null;
+	}
+
+	/**
+	 * <Declaracion>::= ¿var <TipoDato> identificador "_"
+	 */
 	public Declaracion esDeclaracion() {
 		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿var")) {
 			obtenerSgteToken();
