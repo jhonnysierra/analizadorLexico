@@ -157,10 +157,17 @@ public class AnalizadorSintactico {
 		}
 
 		Sentencia impresion = esImpresion();
+		
 		if (impresion != null) {
 			return impresion;
 		}
 		
+		Sentencia lectura = esLectura();
+		
+		if (lectura != null) {
+			return lectura;
+		}
+
 		return null;
 	}
 
@@ -178,22 +185,48 @@ public class AnalizadorSintactico {
 	public Impresion esImpresion() {
 		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿PRINT")) {
 			obtenerSgteToken();
-			
+
 			ExpresionCadena cadena = esExpresionCadena();
-			
-			if (cadena!=null) {
+
+			if (cadena != null) {
 				if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
 					obtenerSgteToken();
 					return new Impresion(cadena);
 				} else {
 					reportarError("Falta fin de sentencia en la impresión");
 				}
-				
+
 			} else {
 				reportarError("Falta la expresión cadena en la impresión");
 			}
-			
+
 		}
+		return null;
+	}
+
+	/**
+	 * <Lectura>::= ¿READ identificador "_"
+	 */
+	public Lectura esLectura() {
+		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿READ")) {
+			obtenerSgteToken();
+			
+			if (tokenActual.getCategoria()==Categoria.IDENTIFICADOR) {
+				Token nombre = tokenActual;
+				obtenerSgteToken();
+				if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
+					obtenerSgteToken();
+					return new Lectura(nombre);
+				} else {
+					reportarError("Falta fin de sentencia en la Lectura");
+				}
+
+			} else {
+				reportarError("Falta la identificador en la lectura");
+			}
+
+		}
+
 		return null;
 	}
 
