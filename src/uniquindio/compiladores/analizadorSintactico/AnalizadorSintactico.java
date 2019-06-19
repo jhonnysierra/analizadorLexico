@@ -309,6 +309,18 @@ public class AnalizadorSintactico {
 			return expAritmetica;
 		}
 
+		ExpresionRelacional expRelacional = esExpresionRelacional();
+
+		if (expRelacional != null) {
+			return expRelacional;
+		}
+
+		ExpresionCadena expCadena = esExpresionCadena();
+		if (expCadena != null) {
+			return expCadena;
+		}
+		
+		
 		return null;
 	}
 
@@ -347,11 +359,71 @@ public class AnalizadorSintactico {
 					reportarError("Falta segundo término en la expresión aritmética");
 				}
 			} else {
+				// Backtracking para que sea analizado por otro metodo que empiece por termino
 				obtenerTokenPosicionN(posActual - 1);
 				// reportarError("Falta el operador aritmético en la expresión");
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * <ExpresionRelacional>::= <Termino> operador relacional <Termino>
+	 */
+	public ExpresionRelacional esExpresionRelacional() {
+		Token termino1 = esTermino();
+
+		if (termino1 != null) {
+			obtenerSgteToken();
+			if (tokenActual.getCategoria() == Categoria.OPERADOR_RELACIONAL) {
+				Token operador = tokenActual;
+				obtenerSgteToken();
+				Token termino2 = esTermino();
+
+				if (termino2 != null) {
+					obtenerSgteToken();
+					return new ExpresionRelacional(termino1, operador, termino2);
+				} else {
+					reportarError("Falta segundo término en la expresión aritmética");
+				}
+			} else {
+				// Backtracking para que sea analizado por otro metodo que empiece por termino
+				obtenerTokenPosicionN(posActual - 1);
+				// reportarError("Falta el operador aritmético en la expresión");
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * <ExpresionCadena>::= cadena caracteres ["-"<ExpresionCadena>] | identificador
+	 */
+	public ExpresionCadena esExpresionCadena() {
+		ArrayList<Token> cadenas = new ArrayList<>();
+
+		ExpresionCadena cadena = null;
+
+		while (tokenActual.getCategoria() == Categoria.IDENTIFICADOR
+				|| tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
+			cadenas.add(tokenActual);
+			obtenerSgteToken();
+			if (tokenActual.getCategoria() == Categoria.SEPARADOR) {
+				obtenerSgteToken();
+				if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR
+						|| tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
+					cadenas.add(tokenActual);
+					obtenerSgteToken();
+				}else {
+					reportarError("Falta concatenar en la cadena de caracteres");
+				}
+			} else {
+				break;
+			}
+		}
+		
+		cadena = new ExpresionCadena(cadenas);
+		
+		return cadena;
 	}
 
 	/**
@@ -388,7 +460,7 @@ public class AnalizadorSintactico {
 						&& tokenActual.getPalabra().equals("¿tru")
 						|| tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA
 								&& tokenActual.getPalabra().equals("¿fa")) {
-					Token expresionA= tokenActual;
+					Token expresionA = tokenActual;
 					obtenerSgteToken();
 					if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
 						obtenerSgteToken();
