@@ -156,6 +156,11 @@ public class AnalizadorSintactico {
 			return expresionAsigancion;
 		}
 
+		Sentencia impresion = esImpresion();
+		if (impresion != null) {
+			return impresion;
+		}
+		
 		return null;
 	}
 
@@ -164,6 +169,31 @@ public class AnalizadorSintactico {
 	 */
 	public Ciclo esCiclo() {
 
+		return null;
+	}
+
+	/**
+	 * <Impresion>::= ¿PRINT <ExpresionCadena>_
+	 */
+	public Impresion esImpresion() {
+		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿PRINT")) {
+			obtenerSgteToken();
+			
+			ExpresionCadena cadena = esExpresionCadena();
+			
+			if (cadena!=null) {
+				if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
+					obtenerSgteToken();
+					return new Impresion(cadena);
+				} else {
+					reportarError("Falta fin de sentencia en la impresión");
+				}
+				
+			} else {
+				reportarError("Falta la expresión cadena en la impresión");
+			}
+			
+		}
 		return null;
 	}
 
@@ -319,8 +349,7 @@ public class AnalizadorSintactico {
 		if (expCadena != null) {
 			return expCadena;
 		}
-		
-		
+
 		return null;
 	}
 
@@ -413,16 +442,16 @@ public class AnalizadorSintactico {
 						|| tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
 					cadenas.add(tokenActual);
 					obtenerSgteToken();
-				}else {
+				} else {
 					reportarError("Falta concatenar en la cadena de caracteres");
 				}
 			} else {
 				break;
 			}
 		}
-		
+
 		cadena = new ExpresionCadena(cadenas);
-		
+
 		return cadena;
 	}
 
