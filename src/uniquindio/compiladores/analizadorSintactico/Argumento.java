@@ -2,45 +2,37 @@ package uniquindio.compiladores.analizadorSintactico;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import uniquindio.compiladores.analizadorlexico.Token;
-
 /**
  * @author JHONNY - JORGE - CARLOS
  *
  */
 public class Argumento {
 
-	private Token tipoDato , nombre ;
-
-	public Argumento(Token tipoDato, Token nombre) {
+	private ExpresionA expresion;
+	
+	public Argumento(ExpresionA expresion) {
 		super();
-		this.tipoDato = tipoDato;
-		this.nombre = nombre;
-		
+		this.expresion = expresion;
 	}
 
-	public Token getTipoDato() {
-		return tipoDato;
-	}
-
-	public Token getNombre() {
-		return nombre;
+	public ExpresionA getExpresion() {
+		return expresion;
 	}
 
 	@Override
 	public String toString() {
-		return "Parametro [tipoDato=" + tipoDato + ", nombre=" + nombre + "]";
+		return "Argumento [expresion=" + expresion + "]";
 	}
-	
+
+
 	/**
-	 * Devuelve el arbol visual de la clase parametro
+	 * Devuelve el arbol visual de la clase Argumento
 	 * @return
 	 */
 	public DefaultMutableTreeNode getArbolVisual() {
-		DefaultMutableTreeNode nodo = new DefaultMutableTreeNode("Parámetro");
+		DefaultMutableTreeNode nodo = new DefaultMutableTreeNode("Argumento");
 		
-		nodo.add(new DefaultMutableTreeNode("Tipo Dato: " + tipoDato.getPalabra()));
-		nodo.add(new DefaultMutableTreeNode("Nombre: " + nombre.getPalabra()));
+		nodo.add(expresion.getArbolVisual());
 
 		return nodo;
 	}

@@ -153,8 +153,6 @@ public class AnalizadorGUI extends JFrame {
 				.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 365, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 
-		JTree treeSyntax = new JTree();
-
 		JScrollPane scrollPane = new JScrollPane();
 		tabbedPane.addTab("Tokens", null, scrollPane, null);
 

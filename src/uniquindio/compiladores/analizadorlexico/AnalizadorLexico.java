@@ -43,6 +43,7 @@ public class AnalizadorLexico {
 		this.palabrasReservadas.add("¿READ");
 		this.palabrasReservadas.add("¿GIVE");
 		this.palabrasReservadas.add("¿MAKE");
+		this.palabrasReservadas.add("¿CALL");
 		this.palabrasReservadas.add("¿none");
 		this.palabrasReservadas.add("¿tru");
 		this.palabrasReservadas.add("¿fa");

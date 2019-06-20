@@ -2,8 +2,6 @@ package uniquindio.compiladores.analizadorSintactico;
 
 import java.util.ArrayList;
 
-import com.sun.corba.se.spi.ior.Identifiable;
-
 import uniquindio.compiladores.analizadorlexico.Categoria;
 import uniquindio.compiladores.analizadorlexico.Token;
 
@@ -160,33 +158,45 @@ public class AnalizadorSintactico {
 		}
 
 		Sentencia impresion = esImpresion();
-		
+
 		if (impresion != null) {
 			return impresion;
 		}
-		
+
 		Sentencia lectura = esLectura();
-		
+
 		if (lectura != null) {
 			return lectura;
 		}
 
 		Sentencia retorno = esRetorno();
-		
+
 		if (retorno != null) {
 			return retorno;
 		}
-		
+
 		Sentencia incremento = esIncremento();
-		
+
 		if (incremento != null) {
 			return incremento;
 		}
-		
+
 		Sentencia decremento = esDecremento();
-		
+
 		if (decremento != null) {
 			return decremento;
+		}
+
+		Sentencia invocacion = esInvocacion();
+
+		if (invocacion != null) {
+			return invocacion;
+		}
+
+		Sentencia asignarFuncion = esAsignarFuncion();
+		
+		if (asignarFuncion != null) {
+			return asignarFuncion;
 		}
 		
 		return null;
@@ -231,8 +241,8 @@ public class AnalizadorSintactico {
 	public Lectura esLectura() {
 		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿READ")) {
 			obtenerSgteToken();
-			
-			if (tokenActual.getCategoria()==Categoria.IDENTIFICADOR) {
+
+			if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
 				Token nombre = tokenActual;
 				obtenerSgteToken();
 				if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
@@ -250,7 +260,7 @@ public class AnalizadorSintactico {
 
 		return null;
 	}
-	
+
 	/**
 	 * <Rertorno>::= ¿GIVE <Expresion> "_"
 	 */
@@ -436,15 +446,30 @@ public class AnalizadorSintactico {
 	}
 
 	/**
-	 * <ExpresionA>::= <Termino> | <Expresion> | <tru> | <fa>
+	 * <ExpresionA>::= <Termino> | <Expresion> | ¿tru | ¿fa
 	 */
-	public Expresion esExpresionA() {
+	public ExpresionA esExpresionA() {
 
 		Expresion expresion = esExpresion();
-		Token termino = esTermino();
 
 		if (expresion != null) {
-			return expresion;
+			return new ExpresionA(expresion);
+		}
+
+		Token termino = esTermino();
+
+		if (termino != null) {
+			obtenerSgteToken();
+			return new ExpresionA(termino);
+		}
+
+		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿tru")
+				|| tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA
+						&& tokenActual.getPalabra().equals("¿fa")) {
+			Token token = tokenActual;
+			obtenerSgteToken();
+			return new ExpresionA(token);
+
 		}
 
 		return null;
@@ -512,29 +537,44 @@ public class AnalizadorSintactico {
 	public ExpresionCadena esExpresionCadena() {
 		ArrayList<Token> cadenas = new ArrayList<>();
 
-		ExpresionCadena cadena = null;
+		//ExpresionCadena cadena = null;
+		
+		if (tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
+			cadenas.add(tokenActual);
+			obtenerSgteToken();
+			
+			while (tokenActual.getCategoria()==Categoria.SEPARADOR) {
+				obtenerSgteToken();
+				if (tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
+					cadenas.add(tokenActual);
+					obtenerSgteToken();
+				} else {
+					reportarError("Falta concatenar en la cadena de caracteres");
+				}
+			}
+			
+			return new ExpresionCadena(cadenas);
+		}
 
-		while (tokenActual.getCategoria() == Categoria.IDENTIFICADOR
-				|| tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
+/*		while (tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
 			cadenas.add(tokenActual);
 			obtenerSgteToken();
 			if (tokenActual.getCategoria() == Categoria.SEPARADOR) {
 				obtenerSgteToken();
-				if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR
-						|| tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
+				if (tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
 					cadenas.add(tokenActual);
 					obtenerSgteToken();
 				} else {
 					reportarError("Falta concatenar en la cadena de caracteres");
 				}
 			} else {
-				break;
+				//return new ExpresionCadena(cadenas);
 			}
-		}
+		}*/
 
-		cadena = new ExpresionCadena(cadenas);
+		return null;
+		
 
-		return cadena;
 	}
 
 	/**
@@ -595,13 +635,13 @@ public class AnalizadorSintactico {
 	 * <Incremento>::=operadorincremento identificador "_"
 	 */
 	public Incremento esIncremento() {
-		if (tokenActual.getCategoria()==Categoria.OPERADOR_INCREMENTO) {
+		if (tokenActual.getCategoria() == Categoria.OPERADOR_INCREMENTO) {
 			Token operador = tokenActual;
 			obtenerSgteToken();
-			if (tokenActual.getCategoria()==Categoria.IDENTIFICADOR) {
+			if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
 				Token nombre = tokenActual;
 				obtenerSgteToken();
-				if (tokenActual.getCategoria()==Categoria.FIN_DE_SENTENCIA) {
+				if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
 					obtenerSgteToken();
 					return new Incremento(nombre, operador);
 				} else {
@@ -611,21 +651,21 @@ public class AnalizadorSintactico {
 				reportarError("Falta identificador en el incremento");
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * <Decremento>::=operadordecremento identificador "_"
 	 */
 	public Decremento esDecremento() {
-		if (tokenActual.getCategoria()==Categoria.OPERADOR_DECREMENTO) {
+		if (tokenActual.getCategoria() == Categoria.OPERADOR_DECREMENTO) {
 			Token operador = tokenActual;
 			obtenerSgteToken();
-			if (tokenActual.getCategoria()==Categoria.IDENTIFICADOR) {
+			if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
 				Token nombre = tokenActual;
 				obtenerSgteToken();
-				if (tokenActual.getCategoria()==Categoria.FIN_DE_SENTENCIA) {
+				if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
 					obtenerSgteToken();
 					return new Decremento(nombre, operador);
 				} else {
@@ -635,10 +675,121 @@ public class AnalizadorSintactico {
 				reportarError("Falta identificador en el decremento");
 			}
 		}
-		
+
+		return null;
+	}
+
+	/**
+	 * <ListaArgumentos> ::= <Argumento>[","<ListaArgumentos>]
+	 */
+	public ArrayList<Argumento> esListaArgumentos() {
+
+		ArrayList<Argumento> argumentos = new ArrayList<>();
+
+		Argumento a = esArgumento();
+
+		while (a != null) {
+			argumentos.add(a);
+
+			if (tokenActual.getCategoria() == Categoria.COMA) {
+				obtenerSgteToken();
+				a = esArgumento();
+			} else {
+				a = null;
+			}
+
+		}
+
+		return argumentos;
+	}
+
+	/**
+	 * <Argumento> ::= <ExpresionA>
+	 */
+	public Argumento esArgumento() {
+		ExpresionA expresionA = esExpresionA();
+
+		if (expresionA != null) {
+			//obtenerSgteToken();
+			return new Argumento(expresionA);
+		}
+
+		return null;
+	}
+
+	/**
+	 * <Invocacion>::= ¿CALL identificador "<<" [<ListaArgumentos>] ">>" "_"
+	 */
+	public Invocacion esInvocacion() {
+		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿CALL")) {
+			obtenerSgteToken();
+			if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
+				Token nombreFuncion = tokenActual;
+				obtenerSgteToken();
+
+				if (tokenActual.getCategoria() == Categoria.PARENTESIS_IZQ) {
+					obtenerSgteToken();
+
+					ArrayList<Argumento> argumentos = null;
+
+					if (tokenActual.getCategoria() != Categoria.PARENTESIS_DER) {
+						argumentos = esListaArgumentos();
+					}
+
+					if (tokenActual.getCategoria() == Categoria.PARENTESIS_DER) {
+						obtenerSgteToken();
+						if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
+							obtenerSgteToken();
+							return new Invocacion(nombreFuncion, argumentos);
+						} else {
+							reportarError("Falta fin de sentencia en la invocación");
+						}
+					} else {
+						reportarError("Falta paréntesis derecho en la invocación");
+					}
+				} else {
+					reportarError("Falta paréntesis izquierdo en la invocación");
+				}
+
+			} else {
+				reportarError("Falta identificador en la invocación");
+			}
+		}
+
 		return null;
 	}
 	
+	/**
+	 * <AsignarFuncion>::= ¿MAKE identificador <InvocacionFuncion> "_"
+	 */
+	public AsignarFuncion esAsignarFuncion() {
+		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿MAKE")) {
+			obtenerSgteToken();
+			
+			if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
+				Token nombre= tokenActual;
+				obtenerSgteToken();
+				
+				Invocacion invocacionF = esInvocacion();
+				
+				if (invocacionF!=null) {
+					if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
+						obtenerSgteToken();
+						return new AsignarFuncion(nombre, invocacionF);	
+					}else {
+						reportarError("Falta fin de sentencia en la asignación de función");
+					}
+				} else {
+					reportarError("Falta invocación en la asignación de función");
+				}
+			} else {
+				reportarError("Falta identificador en la asignación de función");
+			}
+		}
+		
+		return null;
+	}
+
 	/**
 	 * Obtiene el siguiente token de la tabla de tokens
 	 */
