@@ -143,7 +143,11 @@ public class AnalizadorSintactico {
 	 */
 	public Sentencia esSentencia() {
 
-		// Sentencia s = esCiclo();
+		Sentencia ciclo = esCiclo();
+		
+		if (ciclo != null) {
+			return ciclo;
+		}
 
 		Sentencia declaracion = esDeclaracion();
 
@@ -194,11 +198,11 @@ public class AnalizadorSintactico {
 		}
 
 		Sentencia asignarFuncion = esAsignarFuncion();
-		
+
 		if (asignarFuncion != null) {
 			return asignarFuncion;
 		}
-		
+
 		return null;
 	}
 
@@ -206,6 +210,54 @@ public class AnalizadorSintactico {
 	 * <Ciclo> ::= ¿CICLO "«"<ExpresionRelacional>"»" DO "["[<listaSentencias>]"]"
 	 */
 	public Ciclo esCiclo() {
+		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿CICLO")) {
+			obtenerSgteToken();
+			if (tokenActual.getCategoria() == Categoria.PARENTESIS_IZQ) {
+				obtenerSgteToken();
+				Expresion expresionR = esExpresionRelacional();
+
+				if (expresionR != null) {
+					if (tokenActual.getCategoria() == Categoria.PARENTESIS_DER) {
+						obtenerSgteToken();
+						if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA
+								&& tokenActual.getPalabra().equals("¿DO")) {
+
+							obtenerSgteToken();
+
+							if (tokenActual.getCategoria() == Categoria.CORCHETE_IZQ) {
+								obtenerSgteToken();
+
+								ArrayList<Sentencia> sentencias = null;
+
+								if (tokenActual.getCategoria() != Categoria.CORCHETE_DER) {
+									sentencias = esListaSentencias();
+								}
+
+								if (tokenActual.getCategoria() == Categoria.CORCHETE_DER) {
+									obtenerSgteToken();
+									return new Ciclo(expresionR, sentencias);
+								} else {
+									reportarError("Falta corchete derecho en el ciclo");
+								}
+
+							} else {
+								reportarError("Falta corchete izquierdo en el ciclo");
+							}
+
+						} else {
+							reportarError("Falta palabra DO en el ciclo");
+						}
+
+					} else {
+						reportarError("Falta parentesis derecho en el ciclo");
+					}
+				} else {
+					reportarError("Falta expresion relacional en el ciclo");
+				}
+			} else {
+				reportarError("Falta parentesis izquierdo en el ciclo");
+			}
+		}
 
 		return null;
 	}
@@ -537,13 +589,13 @@ public class AnalizadorSintactico {
 	public ExpresionCadena esExpresionCadena() {
 		ArrayList<Token> cadenas = new ArrayList<>();
 
-		//ExpresionCadena cadena = null;
-		
+		// ExpresionCadena cadena = null;
+
 		if (tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
 			cadenas.add(tokenActual);
 			obtenerSgteToken();
-			
-			while (tokenActual.getCategoria()==Categoria.SEPARADOR) {
+
+			while (tokenActual.getCategoria() == Categoria.SEPARADOR) {
 				obtenerSgteToken();
 				if (tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
 					cadenas.add(tokenActual);
@@ -552,28 +604,21 @@ public class AnalizadorSintactico {
 					reportarError("Falta concatenar en la cadena de caracteres");
 				}
 			}
-			
+
 			return new ExpresionCadena(cadenas);
 		}
 
-/*		while (tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
-			cadenas.add(tokenActual);
-			obtenerSgteToken();
-			if (tokenActual.getCategoria() == Categoria.SEPARADOR) {
-				obtenerSgteToken();
-				if (tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
-					cadenas.add(tokenActual);
-					obtenerSgteToken();
-				} else {
-					reportarError("Falta concatenar en la cadena de caracteres");
-				}
-			} else {
-				//return new ExpresionCadena(cadenas);
-			}
-		}*/
+		/*
+		 * while (tokenActual.getCategoria() == Categoria.CADENA_CARACTERES) {
+		 * cadenas.add(tokenActual); obtenerSgteToken(); if (tokenActual.getCategoria()
+		 * == Categoria.SEPARADOR) { obtenerSgteToken(); if (tokenActual.getCategoria()
+		 * == Categoria.CADENA_CARACTERES) { cadenas.add(tokenActual);
+		 * obtenerSgteToken(); } else {
+		 * reportarError("Falta concatenar en la cadena de caracteres"); } } else {
+		 * //return new ExpresionCadena(cadenas); } }
+		 */
 
 		return null;
-		
 
 	}
 
@@ -710,7 +755,7 @@ public class AnalizadorSintactico {
 		ExpresionA expresionA = esExpresionA();
 
 		if (expresionA != null) {
-			//obtenerSgteToken();
+			// obtenerSgteToken();
 			return new Argumento(expresionA);
 		}
 
@@ -758,25 +803,25 @@ public class AnalizadorSintactico {
 
 		return null;
 	}
-	
+
 	/**
 	 * <AsignarFuncion>::= ¿MAKE identificador <InvocacionFuncion> "_"
 	 */
 	public AsignarFuncion esAsignarFuncion() {
 		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿MAKE")) {
 			obtenerSgteToken();
-			
+
 			if (tokenActual.getCategoria() == Categoria.IDENTIFICADOR) {
-				Token nombre= tokenActual;
+				Token nombre = tokenActual;
 				obtenerSgteToken();
-				
+
 				Invocacion invocacionF = esInvocacion();
-				
-				if (invocacionF!=null) {
+
+				if (invocacionF != null) {
 					if (tokenActual.getCategoria() == Categoria.FIN_DE_SENTENCIA) {
 						obtenerSgteToken();
-						return new AsignarFuncion(nombre, invocacionF);	
-					}else {
+						return new AsignarFuncion(nombre, invocacionF);
+					} else {
 						reportarError("Falta fin de sentencia en la asignación de función");
 					}
 				} else {
@@ -786,7 +831,7 @@ public class AnalizadorSintactico {
 				reportarError("Falta identificador en la asignación de función");
 			}
 		}
-		
+
 		return null;
 	}
 
