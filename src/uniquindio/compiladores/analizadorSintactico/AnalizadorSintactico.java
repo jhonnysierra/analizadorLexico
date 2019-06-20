@@ -144,7 +144,7 @@ public class AnalizadorSintactico {
 	public Sentencia esSentencia() {
 
 		Sentencia ciclo = esCiclo();
-		
+
 		if (ciclo != null) {
 			return ciclo;
 		}
@@ -236,6 +236,63 @@ public class AnalizadorSintactico {
 								if (tokenActual.getCategoria() == Categoria.CORCHETE_DER) {
 									obtenerSgteToken();
 									return new Ciclo(expresionR, sentencias);
+								} else {
+									reportarError("Falta corchete derecho en el ciclo");
+								}
+
+							} else {
+								reportarError("Falta corchete izquierdo en el ciclo");
+							}
+
+						} else {
+							reportarError("Falta palabra DO en el ciclo");
+						}
+
+					} else {
+						reportarError("Falta parentesis derecho en el ciclo");
+					}
+				} else {
+					reportarError("Falta expresion relacional en el ciclo");
+				}
+			} else {
+				reportarError("Falta parentesis izquierdo en el ciclo");
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * <Decision>::= ¿SI "«" <ExpresionRelacional> "»" "[" [<ListaSentencias>] "]"
+	 * [¿NO "[" [<ListaSentencias>] "]"]
+	 */
+	public Decision esDecision() {
+		if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA && tokenActual.getPalabra().equals("¿SI")) {
+			obtenerSgteToken();
+			if (tokenActual.getCategoria() == Categoria.PARENTESIS_IZQ) {
+				obtenerSgteToken();
+				Expresion expresionR = esExpresionRelacional();
+
+				if (expresionR != null) {
+					if (tokenActual.getCategoria() == Categoria.PARENTESIS_DER) {
+						obtenerSgteToken();
+						if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA
+								&& tokenActual.getPalabra().equals("¿DO")) {
+
+							obtenerSgteToken();
+
+							if (tokenActual.getCategoria() == Categoria.CORCHETE_IZQ) {
+								obtenerSgteToken();
+
+								ArrayList<Sentencia> sentencias = null;
+
+								if (tokenActual.getCategoria() != Categoria.CORCHETE_DER) {
+									sentencias = esListaSentencias();
+								}
+
+								if (tokenActual.getCategoria() == Categoria.CORCHETE_DER) {
+									obtenerSgteToken();
+									// return new Ciclo(expresionR, sentencias);
 								} else {
 									reportarError("Falta corchete derecho en el ciclo");
 								}
