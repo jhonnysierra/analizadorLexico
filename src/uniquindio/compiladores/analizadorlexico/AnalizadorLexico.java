@@ -37,8 +37,8 @@ public class AnalizadorLexico {
 		this.palabrasReservadas.add("¿trufa");
 		this.palabrasReservadas.add("¿none");
 		this.palabrasReservadas.add("¿var");
-		this.palabrasReservadas.add("¿ciclo");
-		this.palabrasReservadas.add("¿do");
+		this.palabrasReservadas.add("¿CICLO");
+		this.palabrasReservadas.add("¿DO");
 		this.palabrasReservadas.add("¿PRINT");
 		this.palabrasReservadas.add("¿READ");
 		this.palabrasReservadas.add("¿GIVE");

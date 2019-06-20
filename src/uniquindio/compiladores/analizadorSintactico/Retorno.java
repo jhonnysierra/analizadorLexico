@@ -2,8 +2,6 @@ package uniquindio.compiladores.analizadorSintactico;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import uniquindio.compiladores.analizadorlexico.Token;
-
 public class Retorno extends Sentencia {
 
 	private Expresion expresion;

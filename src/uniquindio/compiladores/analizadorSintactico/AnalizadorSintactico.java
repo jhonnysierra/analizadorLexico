@@ -1,6 +1,9 @@
 package uniquindio.compiladores.analizadorSintactico;
 
 import java.util.ArrayList;
+
+import com.sun.corba.se.spi.ior.Identifiable;
+
 import uniquindio.compiladores.analizadorlexico.Categoria;
 import uniquindio.compiladores.analizadorlexico.Token;
 
@@ -174,11 +177,23 @@ public class AnalizadorSintactico {
 			return retorno;
 		}
 		
+		Sentencia incremento = esIncremento();
+		
+		if (incremento != null) {
+			return incremento;
+		}
+		
+		Sentencia decremento = esDecremento();
+		
+		if (decremento != null) {
+			return decremento;
+		}
+		
 		return null;
 	}
 
 	/**
-	 * <Ciclo> ::= ¿ciclo "«"<ExpresionRelacional>"»" do "["[<listaSentencias>]"]"
+	 * <Ciclo> ::= ¿CICLO "«"<ExpresionRelacional>"»" DO "["[<listaSentencias>]"]"
 	 */
 	public Ciclo esCiclo() {
 
@@ -576,6 +591,54 @@ public class AnalizadorSintactico {
 		return null;
 	}
 
+	/**
+	 * <Incremento>::=operadorincremento identificador "_"
+	 */
+	public Incremento esIncremento() {
+		if (tokenActual.getCategoria()==Categoria.OPERADOR_INCREMENTO) {
+			Token operador = tokenActual;
+			obtenerSgteToken();
+			if (tokenActual.getCategoria()==Categoria.IDENTIFICADOR) {
+				Token nombre = tokenActual;
+				obtenerSgteToken();
+				if (tokenActual.getCategoria()==Categoria.FIN_DE_SENTENCIA) {
+					obtenerSgteToken();
+					return new Incremento(nombre, operador);
+				} else {
+					reportarError("Falta fin de sentencia en el incremento");
+				}
+			} else {
+				reportarError("Falta identificador en el incremento");
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * <Decremento>::=operadordecremento identificador "_"
+	 */
+	public Decremento esDecremento() {
+		if (tokenActual.getCategoria()==Categoria.OPERADOR_DECREMENTO) {
+			Token operador = tokenActual;
+			obtenerSgteToken();
+			if (tokenActual.getCategoria()==Categoria.IDENTIFICADOR) {
+				Token nombre = tokenActual;
+				obtenerSgteToken();
+				if (tokenActual.getCategoria()==Categoria.FIN_DE_SENTENCIA) {
+					obtenerSgteToken();
+					return new Decremento(nombre, operador);
+				} else {
+					reportarError("Falta fin de sentencia en el decremento");
+				}
+			} else {
+				reportarError("Falta identificador en el decremento");
+			}
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Obtiene el siguiente token de la tabla de tokens
 	 */
