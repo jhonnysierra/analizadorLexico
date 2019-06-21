@@ -203,6 +203,12 @@ public class AnalizadorSintactico {
 			return asignarFuncion;
 		}
 
+		Sentencia decision = esDecision();
+
+		if (decision != null) {
+			return decision;
+		}
+
 		return null;
 	}
 
@@ -276,43 +282,63 @@ public class AnalizadorSintactico {
 				if (expresionR != null) {
 					if (tokenActual.getCategoria() == Categoria.PARENTESIS_DER) {
 						obtenerSgteToken();
-						if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA
-								&& tokenActual.getPalabra().equals("¿DO")) {
 
+						if (tokenActual.getCategoria() == Categoria.CORCHETE_IZQ) {
 							obtenerSgteToken();
 
-							if (tokenActual.getCategoria() == Categoria.CORCHETE_IZQ) {
+							ArrayList<Sentencia> sentenciasSI = null;
+
+							if (tokenActual.getCategoria() != Categoria.CORCHETE_DER) {
+								sentenciasSI = esListaSentencias();
+							}
+
+							if (tokenActual.getCategoria() == Categoria.CORCHETE_DER) {
 								obtenerSgteToken();
 
-								ArrayList<Sentencia> sentencias = null;
-
-								if (tokenActual.getCategoria() != Categoria.CORCHETE_DER) {
-									sentencias = esListaSentencias();
-								}
-
-								if (tokenActual.getCategoria() == Categoria.CORCHETE_DER) {
+								if (tokenActual.getCategoria() == Categoria.PALABRA_RESERVADA
+										&& tokenActual.getPalabra().equals("¿NO")) {
 									obtenerSgteToken();
-									// return new Ciclo(expresionR, sentencias);
+
+									if (tokenActual.getCategoria() == Categoria.CORCHETE_IZQ) {
+										obtenerSgteToken();
+
+										ArrayList<Sentencia> sentenciasNO = null;
+
+										if (tokenActual.getCategoria() != Categoria.CORCHETE_DER) {
+											sentenciasNO = esListaSentencias();
+										}
+
+										if (tokenActual.getCategoria() == Categoria.CORCHETE_DER) {
+											obtenerSgteToken();
+											return new Decision(expresionR, sentenciasSI, sentenciasNO);
+										} else {
+											reportarError("Falta corchete derecho en el NO de la decisión");
+										}
+
+									} else {
+										reportarError("Falta corchete izquierdo en el NO de la decisión");
+									}
+
 								} else {
-									reportarError("Falta corchete derecho en el ciclo");
+									return new Decision(expresionR, sentenciasSI, null);
 								}
 
 							} else {
-								reportarError("Falta corchete izquierdo en el ciclo");
+								reportarError("Falta corchete derecho en el SI de la decisión");
 							}
 
 						} else {
-							reportarError("Falta palabra DO en el ciclo");
+							reportarError("Falta corchete izquierdo en el SI de la decisión");
 						}
 
 					} else {
-						reportarError("Falta parentesis derecho en el ciclo");
+						reportarError("Falta parentesis derecho en el SI de la decisión");
 					}
 				} else {
-					reportarError("Falta expresion relacional en el ciclo");
+					reportarError("Falta expresion relacional en la decisión");
 				}
 			} else {
-				reportarError("Falta parentesis izquierdo en el ciclo");
+				reportarError("Falta parentesis izquierdo en la decisión");
 			}
 		}
 
@@ -727,7 +753,10 @@ public class AnalizadorSintactico {
 				}
 
 			} else {
-				reportarError("Falta el operador de asignación en la expresión de asignación");
+				// Backtracking para que sea analizado por otro metodo que empiece por termino
+				obtenerTokenPosicionN(posActual - 1);
+				// reportarError("Falta el operador de asignación en la expresión de
+				// asignación");
 			}
 		}
 		return null;

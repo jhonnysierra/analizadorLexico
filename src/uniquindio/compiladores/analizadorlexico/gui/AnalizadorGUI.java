@@ -249,7 +249,7 @@ public class AnalizadorGUI extends JFrame {
 					limpiarTablas();
 
 					JOptionPane.showMessageDialog(null,
-							"Análisis terminado. Se encontraron " + al.getListaTokens().size() + " token.", "EXITOSO",
+							"ANÁLISIS TERMINADO. \n\nTOKENS ENCONTRADOS: " + al.getListaTokens().size() + "\nERRORES LÉXICOS: " + al.getListaErrores().size() + "\nERRORES SINTÁCTICOS: " + as.getTablaErrores().size(), "EXITOSO",
 							JOptionPane.INFORMATION_MESSAGE);
 
 					tabbedPane.setSelectedIndex(0);
