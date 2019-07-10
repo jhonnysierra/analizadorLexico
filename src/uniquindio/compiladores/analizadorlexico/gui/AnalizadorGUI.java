@@ -208,6 +208,12 @@ public class AnalizadorGUI extends JFrame {
 
 		// CONFIGURACIONES GENERALES TABLAS
 		scrollPane_4.setViewportView(tablaErroresSintacticos);
+		
+		JScrollPane scrollPane_5 = new JScrollPane();
+		tabbedPane.addTab("Errores Sem\u00E1nticos", null, scrollPane_5, null);
+		
+		JTextArea textArea = new JTextArea();
+		scrollPane_5.setViewportView(textArea);
 		dtmErrores = (DefaultTableModel) tablaErroresLexicos.getModel();
 		dtmErroresSintacticos = (DefaultTableModel) tablaErroresSintacticos.getModel();
 

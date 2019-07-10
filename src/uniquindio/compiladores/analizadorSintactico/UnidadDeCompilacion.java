@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import uniquindio.compiladores.analizadorSemantico.TablaSimbolos;
+
 public class UnidadDeCompilacion {
 
 	private ArrayList<Funcion> listaFunciones;
@@ -34,6 +36,16 @@ public class UnidadDeCompilacion {
 		}
 		
 		return raiz;
+	}
+
+	public void crearTablaSimbolos(TablaSimbolos tablaSimbolos, ArrayList<String> errores) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void analizarSemantica(TablaSimbolos tablaSimbolos, ArrayList<String> errores) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
