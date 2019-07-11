@@ -21,6 +21,10 @@ public class AnalizadorSemantico {
 	}
 
 	public void analizar() {
+		errores.clear();
+		tablaSimbolos.getErrores().clear();
+		tablaSimbolos.getTablaSimbolos().clear();
+		
 		unidadCompilacion.crearTablaSimbolos(tablaSimbolos, errores); 
 		unidadCompilacion.analizarSemantica(tablaSimbolos, errores);
 	}

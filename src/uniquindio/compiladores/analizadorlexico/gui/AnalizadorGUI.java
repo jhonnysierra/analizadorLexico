@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -25,6 +26,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import uniquindio.compiladores.analizadorSemantico.AnalizadorSemantico;
 import uniquindio.compiladores.analizadorSintactico.AnalizadorSintactico;
 import uniquindio.compiladores.analizadorSintactico.ErrorSintactico;
 import uniquindio.compiladores.analizadorlexico.AnalizadorLexico;
@@ -212,8 +214,8 @@ public class AnalizadorGUI extends JFrame {
 		JScrollPane scrollPane_5 = new JScrollPane();
 		tabbedPane.addTab("Errores Sem\u00E1nticos", null, scrollPane_5, null);
 		
-		JTextArea textArea = new JTextArea();
-		scrollPane_5.setViewportView(textArea);
+		JTextArea textAreaSemantico = new JTextArea();
+		scrollPane_5.setViewportView(textAreaSemantico);
 		dtmErrores = (DefaultTableModel) tablaErroresLexicos.getModel();
 		dtmErroresSintacticos = (DefaultTableModel) tablaErroresSintacticos.getModel();
 
@@ -244,11 +246,23 @@ public class AnalizadorGUI extends JFrame {
 					JOptionPane.showMessageDialog(null, "Ingrese al menos un caracter", "ERROR",
 							JOptionPane.WARNING_MESSAGE);
 				} else {
+					//INVOCACION ANALISIS LEXICO
 					AnalizadorLexico al = new AnalizadorLexico(codigoFuente);
 					al.analizar();
 
+					//INVOCACION ANALISIS SEMANTICO
 					AnalizadorSintactico as = new AnalizadorSintactico(al.getListaTokens());
 					as.analizar();
+					
+					// INVOCACION ANALISIS SEMANTICO
+					AnalizadorSemantico aSe = new AnalizadorSemantico(as.getUnidadDeCompilacion());
+					aSe.analizar();
+					
+					// ERRORES SEMANTICOS
+					textAreaSemantico.setText("");
+					for (String err: aSe.getErrores()) {
+						textAreaSemantico.append(err + "\n");
+					}
 					
 					scrollPane_3.setViewportView((new JTree(as.getUnidadDeCompilacion().getArbolVisual())));
 
@@ -297,6 +311,7 @@ public class AnalizadorGUI extends JFrame {
 
 					System.out.println("\nUnidad de compilacion\n" + as.getUnidadDeCompilacion());
 					System.out.println("ERRORES SINTACTICOS\n" + as.getTablaErrores());
+					System.out.println("TABLA SIMBOLOS\n" + aSe.getTablaSimbolos());
 
 
 					// Carga de errores sintacticos encontrados en la tabla

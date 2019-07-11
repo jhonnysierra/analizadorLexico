@@ -2,6 +2,12 @@ package uniquindio.compiladores.analizadorSemantico;
 
 import java.util.ArrayList;
 
+/**
+ * Clase que representa la tabla de simbolos y errores del analizador semantico
+ * 
+ * @author JHONNY
+ *
+ */
 public class TablaSimbolos {
 	private ArrayList<Simbolo> tablaSimbolos;
 	private ArrayList<String> errores;
@@ -11,6 +17,14 @@ public class TablaSimbolos {
 		this.errores = errores;
 	}
 
+	/**
+	 * Funcion para agregar variables o parametros a la tabla de simbolos
+	 * 
+	 * @param nombre
+	 * @param tipo
+	 * @param ambito
+	 * @return Simbolo
+	 */
 	public Simbolo agregarSimbolo(String nombre, String tipo, Simbolo ambito) {
 		Simbolo s = new Simbolo(nombre, tipo, ambito);
 
@@ -23,6 +37,14 @@ public class TablaSimbolos {
 		return s;
 	}
 
+	/**
+	 * Funcion para agregar funciones a la tabla de simbolos
+	 * @param nombre
+	 * @param tipo
+	 * @param ambito
+	 * @param params
+	 * @return Simbolo
+	 */
 	public Simbolo agregarSimbolo(String nombre, String tipo, Simbolo ambito, ArrayList<String> params) {
 		Simbolo s = new Simbolo(nombre, tipo, ambito, params);
 

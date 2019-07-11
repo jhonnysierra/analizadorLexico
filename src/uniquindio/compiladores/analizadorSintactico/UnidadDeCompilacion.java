@@ -1,7 +1,6 @@
 package uniquindio.compiladores.analizadorSintactico;
 
 import java.util.ArrayList;
-
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import uniquindio.compiladores.analizadorSemantico.TablaSimbolos;
@@ -26,26 +25,31 @@ public class UnidadDeCompilacion {
 
 	/**
 	 * Devuelve el arbor visual de la unidad de compilacion
+	 * 
 	 * @return
 	 */
 	public DefaultMutableTreeNode getArbolVisual() {
 		DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Unidad de compilacion");
-		
-		for (Funcion f: listaFunciones) {
+
+		for (Funcion f : listaFunciones) {
 			raiz.add(f.getArbolVisual());
 		}
-		
+
 		return raiz;
 	}
 
 	public void crearTablaSimbolos(TablaSimbolos tablaSimbolos, ArrayList<String> errores) {
-		// TODO Auto-generated method stub
-		
+		for (Funcion f : listaFunciones) {
+			f.crearTablaSimbolos(tablaSimbolos, errores);
+		}
+
 	}
 
 	public void analizarSemantica(TablaSimbolos tablaSimbolos, ArrayList<String> errores) {
-		// TODO Auto-generated method stub
-		
+		for (Funcion f : listaFunciones) {
+			f.analizarSemantica(tablaSimbolos, errores);
+		}
+
 	}
-	
+
 }
