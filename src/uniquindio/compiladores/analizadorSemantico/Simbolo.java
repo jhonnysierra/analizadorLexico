@@ -39,7 +39,6 @@ public class Simbolo {
 		int result = 1;
 		result = prime * result + ((ambito == null) ? 0 : ambito.hashCode());
 		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-		result = prime * result + ((tipo == null) ? 0 : tipo.hashCode());
 		result = prime * result + ((tiposParams == null) ? 0 : tiposParams.hashCode());
 		return result;
 	}
@@ -62,11 +61,6 @@ public class Simbolo {
 			if (other.nombre != null)
 				return false;
 		} else if (!nombre.equals(other.nombre))
-			return false;
-		if (tipo == null) {
-			if (other.tipo != null)
-				return false;
-		} else if (!tipo.equals(other.tipo))
 			return false;
 		if (tiposParams == null) {
 			if (other.tiposParams != null)

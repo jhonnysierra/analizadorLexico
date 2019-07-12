@@ -1,7 +1,11 @@
 package uniquindio.compiladores.analizadorSintactico;
 
+import java.util.ArrayList;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import uniquindio.compiladores.analizadorSemantico.Simbolo;
+import uniquindio.compiladores.analizadorSemantico.TablaSimbolos;
 import uniquindio.compiladores.analizadorlexico.Token;
 
 /**
@@ -58,6 +62,18 @@ public class ExpresionRelacional extends Expresion{
 		nodo.add(new DefaultMutableTreeNode("Termino 2: " + termino2.getPalabra()));
 		
 		return nodo;
+	}
+
+	@Override
+	public void analizarSemantica(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String obtenerTipo() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -24,15 +24,9 @@ public abstract class Sentencia {
 		return null;
 	}
 
-	public void crearTablaSimbolos(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito) {
-		// TODO Auto-generated method stub
-		
-	}
+	public abstract void crearTablaSimbolos(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito);
 
-	public void analizarSemantica(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito) {
-		// TODO Auto-generated method stub
-		
-	}
+	public abstract void analizarSemantica(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito);
 
 
 

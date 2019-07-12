@@ -1,6 +1,11 @@
 package uniquindio.compiladores.analizadorSintactico;
 
+import java.util.ArrayList;
+
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import uniquindio.compiladores.analizadorSemantico.Simbolo;
+import uniquindio.compiladores.analizadorSemantico.TablaSimbolos;
 
 public class Impresion extends Sentencia{
 	
@@ -31,5 +36,18 @@ public class Impresion extends Sentencia{
 
 		return nodo;
 	}
+
+	@Override
+	public void crearTablaSimbolos(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito) {
+
+	}
+
+	@Override
+	public void analizarSemantica(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito) {
+
+
+	}
+	
+	
 
 }

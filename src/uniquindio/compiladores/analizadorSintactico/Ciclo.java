@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import uniquindio.compiladores.analizadorSemantico.Simbolo;
+import uniquindio.compiladores.analizadorSemantico.TablaSimbolos;
+
 public class Ciclo extends Sentencia {
 
 	private Expresion expresionR;
@@ -57,4 +60,18 @@ public class Ciclo extends Sentencia {
 
 		return nodo;
 	}
+
+	@Override
+	public void crearTablaSimbolos(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito) {
+
+	}
+
+	@Override
+	public void analizarSemantica(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito) {
+		
+	}
+
+
+	
+	
 }
