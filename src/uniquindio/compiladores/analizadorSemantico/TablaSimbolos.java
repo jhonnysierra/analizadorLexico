@@ -57,6 +57,13 @@ public class TablaSimbolos {
 		return s;
 	}
 	
+	/**
+	 * Metodo que permite buscar si una variable o parametro existe en la tabla
+	 * 
+	 * @param nombre
+	 * @param ambito
+	 * @return
+	 */
 	public Simbolo buscarSimbolo(String nombre, Simbolo ambito) {
 		for (Simbolo simbolo: tablaSimbolos) {
 			if (simbolo.getNombre().equals(nombre) && simbolo.getAmbito().equals(ambito)) {
@@ -67,6 +74,13 @@ public class TablaSimbolos {
 		return null;
 	}
 	
+	/**
+	 * Metodo que permite buscar si una funcion existe en la tabla de simbolos 
+	 * 
+	 * @param nombre
+	 * @param params
+	 * @return
+	 */
 	public Simbolo buscarSimbolo(String nombre, ArrayList<String> params) {
 		for (Simbolo simbolo: tablaSimbolos) {
 			if (simbolo.getNombre().equals(nombre) && simbolo.getTiposParams().equals(params)) {

@@ -12,6 +12,7 @@ public class Invocacion extends Sentencia{
 
 	private Token nombreFuncion;
 	private ArrayList<Argumento> listaArgumentos;
+	private Simbolo ambito;
 	
 	public Invocacion(Token nombreFuncion, ArrayList<Argumento> listaArgumentos) {
 		super();
@@ -25,6 +26,10 @@ public class Invocacion extends Sentencia{
 
 	public ArrayList<Argumento> getListaArgumentos() {
 		return listaArgumentos;
+	}
+	
+	public Simbolo getAmbito() {
+		return ambito;
 	}
 
 	@Override
@@ -57,6 +62,18 @@ public class Invocacion extends Sentencia{
 		return nodo;
 	}
 
+	public ArrayList<String> getTiposArgs() {
+		ArrayList<String> l = new ArrayList<String>();
+
+		if (listaArgumentos != null) {
+			for (Argumento a : listaArgumentos) {
+				l.add(a.getExpresion().getNombre().getPalabra());
+			}
+		}
+		return l;
+
+	}
+	
 	@Override
 	public void crearTablaSimbolos(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito) {
 
@@ -65,8 +82,12 @@ public class Invocacion extends Sentencia{
 
 	@Override
 	public void analizarSemantica(TablaSimbolos tablaSimbolos, ArrayList<String> errores, Simbolo ambito) {
-
-
+/*		Simbolo s = tablaSimbolos.buscarSimbolo(nombreFuncion.getPalabra(), getTiposArgs());
+		
+		if (s==null) {
+			errores.add("La función " + nombreFuncion + " no existe");
+		}
+*/
 	}
 	
 	
